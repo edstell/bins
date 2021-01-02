@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	"github.com/edstell/waste-lambda/model"
+	"github.com/edstell/lambda/service.api.recycling-services/model"
 )
 
 type Store interface {

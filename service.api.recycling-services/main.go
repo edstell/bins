@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/edstell/waste-lambda/domain"
-	"github.com/edstell/waste-lambda/router"
+	"github.com/edstell/lambda/api"
+	"github.com/edstell/lambda/service.api.recycling-services/domain"
 )
 
 func timeNowUTC() time.Time {
@@ -13,7 +13,7 @@ func timeNowUTC() time.Time {
 }
 
 func main() {
-	router := router.New()
+	router := api.NewRouter()
 	router.Route("GET", "/properties/{property}", domain.ReadProperty(nil))
 	lambda.Start(router.Handler)
 }
