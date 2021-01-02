@@ -32,7 +32,7 @@ func NewKnown(statusCode int, message string) error {
 func NotFound(resource string) error {
 	return &known{
 		statusCode: http.StatusNotFound,
-		message:    fmt.Sprintf("'%s' was not found"),
+		message:    fmt.Sprintf("'%s' was not found", resource),
 	}
 }
 

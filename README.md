@@ -1,2 +1,2 @@
 # lambda
-Monorepo for lambda backend services.
+Monorepo for AWS lambda functions.
