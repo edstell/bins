@@ -1,25 +1,48 @@
 package errors
 
-type Client interface {
+import (
+	"fmt"
+	"net/http"
+)
+
+type Known interface {
 	StatusCode() int
 }
 
-type client struct {
+type known struct {
 	statusCode int
 	message    string
 }
 
-func (c *client) StatusCode() int {
+func (c *known) StatusCode() int {
 	return c.statusCode
 }
 
-func (c *client) Error() string {
+func (c *known) Error() string {
 	return c.message
 }
 
-func NewClient(statusCode int, message string) error {
-	return &client{
+func NewKnown(statusCode int, message string) error {
+	return &known{
 		statusCode: statusCode,
 		message:    message,
 	}
+}
+
+func NotFound(resource string) error {
+	return &known{
+		statusCode: http.StatusNotFound,
+		message:    fmt.Sprintf("'%s' was not found"),
+	}
+}
+
+func BadRequest(reason string) error {
+	return &known{
+		statusCode: http.StatusBadRequest,
+		message:    fmt.Sprintf("bad request: %s", reason),
+	}
+}
+
+func MissingParam(param string) error {
+	return BadRequest(fmt.Sprintf("missing param: %s", param))
 }

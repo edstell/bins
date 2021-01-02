@@ -40,11 +40,11 @@ func (r *Router) Route(method, resource string, handler Handler) {
 func (r *Router) Handler(ctx context.Context, req Request) (*Response, error) {
 	route, ok := r.routes[req.Resource]
 	if !ok {
-		return failed(errors.NewClient(http.StatusBadRequest, fmt.Sprintf("invalid resource: %s", req.Resource)))
+		return failed(errors.NewKnown(http.StatusBadRequest, fmt.Sprintf("invalid resource: %s", req.Resource)))
 	}
 	handler, ok := route[req.HTTPMethod]
 	if !ok {
-		return failed(errors.NewClient(http.StatusMethodNotAllowed, "unsupported method for resource"))
+		return failed(errors.NewKnown(http.StatusMethodNotAllowed, "unsupported method for resource"))
 	}
 	rsp, err := handler(ctx, req)
 	if err != nil {
@@ -63,8 +63,8 @@ func failed(err error) (*Response, error) {
 		return nil, err
 	}
 	statusCode := http.StatusInternalServerError
-	if c, ok := err.(errors.Client); ok {
-		statusCode = c.StatusCode()
+	if k, ok := err.(errors.Known); ok {
+		statusCode = k.StatusCode()
 	}
 	return &Response{
 		StatusCode: statusCode,
@@ -73,12 +73,16 @@ func failed(err error) (*Response, error) {
 }
 
 func OK(body interface{}) (*Response, error) {
-	bytes, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
+	rsp := ""
+	if body != nil {
+		bytes, err := json.Marshal(body)
+		if err != nil {
+			return nil, err
+		}
+		rsp = string(bytes)
 	}
 	return &Response{
 		StatusCode: http.StatusOK,
-		Body:       string(bytes),
+		Body:       rsp,
 	}, nil
 }
