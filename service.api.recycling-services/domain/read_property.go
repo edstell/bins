@@ -9,11 +9,16 @@ import (
 
 // ReadProperty retrieves the property referenced from persistent storage.
 func ReadProperty(store store.Store) api.Handler {
+	type response struct {
+		Method         string            `json:"method"`
+		Resource       string            `json:"resource"`
+		PathParameters map[string]string `json:"path_parameters"`
+	}
 	return func(ctx context.Context, req api.Request) (*api.Response, error) {
-		services, err := store.ReadProperty(ctx, req.PathParameters["property"])
-		if err != nil {
-			return nil, err
-		}
-		return api.OK(services)
+		return api.OK(response{
+			Method:         req.HTTPMethod,
+			Resource:       req.Resource,
+			PathParameters: req.PathParameters,
+		})
 	}
 }

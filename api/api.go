@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -31,6 +32,7 @@ func (r *Router) Route(method, resource string, handler Handler) {
 	route, ok := r.routes[resource]
 	if !ok {
 		route = map[string]Handler{}
+		r.routes[resource] = route
 	}
 	route[method] = handler
 }
@@ -38,7 +40,7 @@ func (r *Router) Route(method, resource string, handler Handler) {
 func (r *Router) Handler(ctx context.Context, req Request) (*Response, error) {
 	route, ok := r.routes[req.Resource]
 	if !ok {
-		return failed(errors.NewClient(http.StatusBadRequest, "invalid resource"))
+		return failed(errors.NewClient(http.StatusBadRequest, fmt.Sprintf("invalid resource: %s", req.Resource)))
 	}
 	handler, ok := route[req.HTTPMethod]
 	if !ok {
