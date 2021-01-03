@@ -34,7 +34,7 @@ func Client(invoker LambdaInvoker, arn, procedureName string) Invoker {
 	return InvokerFunc(func(ctx context.Context, body []byte) ([]byte, error) {
 		payload, err := json.Marshal(request{
 			ProcedureName: procedureName,
-			Body:          body,
+			Body:          string(body),
 		})
 		if err != nil {
 			return nil, err
@@ -58,6 +58,6 @@ func Client(invoker LambdaInvoker, arn, procedureName string) Invoker {
 			return nil, err
 		}
 
-		return rsp.Body, nil
+		return []byte(rsp.Body), nil
 	})
 }

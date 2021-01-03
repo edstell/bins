@@ -36,9 +36,9 @@ func (r *Router) Handler(ctx context.Context, req request) (*response, error) {
 	if !ok {
 		return nil, errors.New(fmt.Sprintf("invalid prodecure name: %s", req.ProcedureName))
 	}
-	rsp, err := handler(ctx, Request{Body: req.Body})
+	rsp, err := handler(ctx, Request{Body: []byte(req.Body)})
 	if err != nil {
 		return nil, err
 	}
-	return &response{Body: rsp.Body}, err
+	return &response{Body: string(rsp.Body)}, err
 }
