@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	recyclingservices "github.com/edstell/lambda/lambda.recycling-services/rpc"
 	"github.com/edstell/lambda/libraries/errors"
 )
 
@@ -28,7 +29,7 @@ func NewDynamoDB(db dynamodbiface.DynamoDBAPI, timeNow func() time.Time) *Dynamo
 	}
 }
 
-func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*Property, error) {
+func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*recyclingservices.Property, error) {
 	input := &dynamodb.GetItemInput{
 		TableName: aws.String(s.propertyTableName),
 		Key: map[string]*dynamodb.AttributeValue{
@@ -46,7 +47,7 @@ func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*Proper
 		return nil, errors.NotFound(fmt.Sprintf("property: %s", propertyID))
 	}
 
-	property := &Property{}
+	property := &recyclingservices.Property{}
 	if err := dynamodbattribute.UnmarshalMap(result.Item, property); err != nil {
 		return nil, err
 	}
@@ -54,7 +55,7 @@ func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*Proper
 	return property, nil
 }
 
-func (s *DynamoDB) WriteProperty(ctx context.Context, property Property) error {
+func (s *DynamoDB) WriteProperty(ctx context.Context, property recyclingservices.Property) error {
 	item, err := dynamodbattribute.MarshalMap(property)
 	if err != nil {
 		return err
