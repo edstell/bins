@@ -3,7 +3,7 @@ package domain
 import (
 	"context"
 
-	"github.com/edstell/lambda/service.api.recycling-services/store"
+	"github.com/edstell/lambda/lambda.api.recycling-services/store"
 )
 
 type BusinessLogic interface {

@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/edstell/lambda/errors"
+	"github.com/edstell/lambda/libraries/errors"
 )
 
 type Service struct {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/edstell/lambda/service.api.recycling-services/model"
+	"github.com/edstell/lambda/lambda.api.recycling-services/model"
 )
 
 type Property struct {

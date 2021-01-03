@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/edstell/lambda/errors"
+	"github.com/edstell/lambda/libraries/errors"
 )
 
 type Request events.APIGatewayProxyRequest

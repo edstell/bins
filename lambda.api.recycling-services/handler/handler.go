@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/edstell/lambda/api"
-	"github.com/edstell/lambda/errors"
-	"github.com/edstell/lambda/service.api.recycling-services/domain"
-	"github.com/edstell/lambda/service.api.recycling-services/model"
-	"github.com/edstell/lambda/service.api.recycling-services/store"
+	"github.com/edstell/lambda/lambda.api.recycling-services/domain"
+	"github.com/edstell/lambda/lambda.api.recycling-services/model"
+	"github.com/edstell/lambda/lambda.api.recycling-services/store"
+	"github.com/edstell/lambda/libraries/api"
+	"github.com/edstell/lambda/libraries/errors"
 )
 
 func GETProperty(logic domain.BusinessLogic) api.Handler {
