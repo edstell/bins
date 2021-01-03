@@ -34,7 +34,7 @@ func (r *Router) Route(procedureName string, handler Handler) {
 func (r *Router) Handler(ctx context.Context, req request) (*response, error) {
 	handler, ok := r.routes[req.ProcedureName]
 	if !ok {
-		return nil, errors.New(fmt.Sprintf("invalid prodecure name: %s", req.ProcedureName))
+		return nil, errors.New(fmt.Sprintf("invalid procedure name: %s", req.ProcedureName))
 	}
 	rsp, err := handler(ctx, Request{Body: []byte(req.Body)})
 	if err != nil {
