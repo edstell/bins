@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 
-	"github.com/edstell/lambda/lambda.recycling-services/domain"
-	recyclingservices "github.com/edstell/lambda/lambda.recycling-services/rpc"
+	"github.com/edstell/lambda/service.recycling-services/domain"
+	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
 )
 
 type handler struct {

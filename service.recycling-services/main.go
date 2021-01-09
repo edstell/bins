@@ -8,10 +8,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/edstell/lambda/lambda.recycling-services/domain"
-	"github.com/edstell/lambda/lambda.recycling-services/handler"
-	recyclingservices "github.com/edstell/lambda/lambda.recycling-services/rpc"
-	"github.com/edstell/lambda/lambda.recycling-services/store"
+	"github.com/edstell/lambda/service.recycling-services/domain"
+	"github.com/edstell/lambda/service.recycling-services/handler"
+	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
+	"github.com/edstell/lambda/service.recycling-services/store"
 )
 
 func timeNowUTC() time.Time {

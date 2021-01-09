@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	recyclingservices "github.com/edstell/lambda/lambda.recycling-services/rpc"
+	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
 )
 
 // Fetcher implementations should retrieve the latest services available for

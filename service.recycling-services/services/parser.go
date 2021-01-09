@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	recyclingservices "github.com/edstell/lambda/lambda.recycling-services/rpc"
+	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
 )
 
 // Parser implementations should extract services from raw bytes.

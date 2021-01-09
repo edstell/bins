@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	recyclingservices "github.com/edstell/lambda/lambda.recycling-services/rpc"
+	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

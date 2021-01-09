@@ -9,8 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
-	recyclingservices "github.com/edstell/lambda/lambda.recycling-services/rpc"
 	"github.com/edstell/lambda/libraries/errors"
+	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
 )
 
 type DynamoDB struct {

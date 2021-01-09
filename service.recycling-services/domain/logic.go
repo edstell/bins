@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	recyclingservices "github.com/edstell/lambda/lambda.recycling-services/rpc"
-	"github.com/edstell/lambda/lambda.recycling-services/services"
-	"github.com/edstell/lambda/lambda.recycling-services/store"
+	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
+	"github.com/edstell/lambda/service.recycling-services/services"
+	"github.com/edstell/lambda/service.recycling-services/store"
 )
 
 type Logic interface {
