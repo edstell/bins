@@ -8,16 +8,18 @@ import (
 )
 
 type Client struct {
-	readProperty  rpc.Invoker
-	writeProperty rpc.Invoker
-	syncProperty  rpc.Invoker
+	readProperty   rpc.Invoker
+	writeProperty  rpc.Invoker
+	syncProperty   rpc.Invoker
+	notifyProperty rpc.Invoker
 }
 
 func NewClient(i rpc.LambdaInvoker, arn string) *Client {
 	return &Client{
-		readProperty:  rpc.Client(i, arn, "ReadProperty"),
-		writeProperty: rpc.Client(i, arn, "WriteProperty"),
-		syncProperty:  rpc.Client(i, arn, "SyncProperty"),
+		readProperty:   rpc.Client(i, arn, "ReadProperty"),
+		writeProperty:  rpc.Client(i, arn, "WriteProperty"),
+		syncProperty:   rpc.Client(i, arn, "SyncProperty"),
+		notifyProperty: rpc.Client(i, arn, "NotifyProperty"),
 	}
 }
 
@@ -71,6 +73,25 @@ func (c *Client) SyncProperty(ctx context.Context, req SyncPropertyRequest) (*Sy
 	}
 
 	out := &SyncPropertyResponse{}
+	if err := json.Unmarshal(rsp, out); err != nil {
+		return nil, err
+	}
+
+	return out, nil
+}
+
+func (c *Client) NotifyProperty(ctx context.Context, req NotifyPropertyRequest) (*NotifyPropertyResponse, error) {
+	payload, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	rsp, err := c.notifyProperty.Invoke(ctx, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	out := &NotifyPropertyResponse{}
 	if err := json.Unmarshal(rsp, out); err != nil {
 		return nil, err
 	}

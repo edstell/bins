@@ -8,10 +8,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/edstell/lambda/service.recycling-services/domain"
+	svc "github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/aws/aws-xray-sdk-go/xray"
 	"github.com/edstell/lambda/service.recycling-services/handler"
 	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
 	"github.com/edstell/lambda/service.recycling-services/store"
+	twilio "github.com/edstell/lambda/service.twilio/rpc"
 )
 
 func timeNowUTC() time.Time {
@@ -26,7 +28,11 @@ func main() {
 		dynamodb.New(sess),
 		timeNowUTC,
 	)
-	handler := handler.New(domain.NewLogic(store))
+	lambdaService := svc.New(sess)
+	// Instrument the lambda client.
+	xray.AWS(lambdaService.Client)
+	client := twilio.NewClient(lambdaService, os.Getenv("TWILIO_ARN"))
+	handler := handler.New(store, client, timeNowUTC)
 	router := recyclingservices.NewRouter(handler)
 	lambda.Start(router.Handler)
 }

@@ -17,12 +17,17 @@ var Prodedures = []rpc.Procedure{
 		Request:  WritePropertyRequest{},
 		Response: WritePropertyResponse{},
 	},
+	// SyncProperty will fetch the latest collection times for the property
+	// and overwrite what's currently stored.
 	{
-		// SyncProperty will fetch the latest collection times for the property
-		// and overwrite what's currently stored.
 		Name:     "SyncProperty",
 		Request:  SyncPropertyRequest{},
 		Response: SyncPropertyResponse{},
+	},
+	{
+		Name:     "NotifyProperty",
+		Request:  NotifyPropertyRequest{},
+		Response: NotifyPropertyResponse{},
 	},
 }
 
@@ -64,3 +69,11 @@ type SyncPropertyRequest struct {
 type SyncPropertyResponse struct {
 	Property Property `json:"property"`
 }
+
+type NotifyPropertyRequest struct {
+	PropertyID  string `json:"property_id"`
+	Message     string `json:"message"`
+	PhoneNumber string `json:"phone_number"`
+}
+
+type NotifyPropertyResponse struct{}
