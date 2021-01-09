@@ -19,8 +19,8 @@ func New(client *twilio.Client) rpc.Handler {
 
 func (h *handler) SendSMS(ctx context.Context, body rpc.SendSMSRequest) (*rpc.SendSMSResponse, error) {
 	if err := h.client.SendSMS(ctx, map[string]string{
-		"to":   body.To,
-		"body": body.Message,
+		"To":   body.To,
+		"Body": body.Message,
 	}); err != nil {
 		return nil, err
 	}

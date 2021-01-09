@@ -11,7 +11,7 @@ import (
 
 func TestSendSMS(t *testing.T) {
 	t.Parallel()
-	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, _ *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
@@ -21,9 +21,8 @@ func TestSendSMS(t *testing.T) {
 		sid:     "SID",
 	}
 	err := c.SendSMS(context.Background(), map[string]string{
-		"to":   "+4412345678910",
-		"from": "+4410987654321",
-		"body": "test message",
+		"To":   "+4412345678910",
+		"Body": "test message",
 	})
 	require.NoError(t, err)
 }

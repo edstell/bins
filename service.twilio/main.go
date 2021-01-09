@@ -18,7 +18,7 @@ func main() {
 	client := twilio.NewClient(
 		twilio.WithSID(os.Getenv("SID")),
 		twilio.WithAuthToken(os.Getenv("AUTH_TOKEN")),
-		twilio.WithFrom(os.Getenv("NUMBER")),
+		twilio.WithFrom(os.Getenv("FROM_NUMBER")),
 	)
 	handler := handler.New(client)
 	router := rpc.NewRouter(handler)

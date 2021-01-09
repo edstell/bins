@@ -2,9 +2,11 @@ package twilio
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/edstell/lambda/libraries/errors"
@@ -45,9 +47,9 @@ func WithAuthToken(authToken string) func(*Client) {
 	}
 }
 
-func WithFrom(authToken string) func(*Client) {
+func WithFrom(from string) func(*Client) {
 	return func(client *Client) {
-		client.authToken = authToken
+		client.from = from
 	}
 }
 
@@ -64,19 +66,20 @@ func WithHTTPClient(httpClient *http.Client) func(*Client) {
 }
 
 func (c *Client) SendSMS(ctx context.Context, params map[string]string) error {
-	if _, ok := params["to"]; !ok {
-		return errors.MissingParam("to")
+	if _, ok := params["To"]; !ok {
+		return errors.MissingParam("To")
 	}
-	if _, ok := params["body"]; !ok {
-		return errors.MissingParam("body")
+	if _, ok := params["Body"]; !ok {
+		return errors.MissingParam("Body")
 	}
 
 	query := url.Values{}
-	query.Add("from", c.from)
+	query.Add("From", c.from)
 	for key, value := range params {
 		query.Add(key, value)
 	}
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/Accounts/%s/Messages.json?%s", c.baseURL, c.sid, query.Encode()), nil)
+	reader := strings.NewReader(query.Encode())
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/Accounts/%s/Messages.json", c.baseURL, c.sid), reader)
 	if err != nil {
 		return err
 	}
@@ -91,7 +94,14 @@ func (c *Client) SendSMS(ctx context.Context, params map[string]string) error {
 	}
 	defer rsp.Body.Close()
 	if rsp.StatusCode < 200 || rsp.StatusCode >= 300 {
-		return errors.NewKnown(rsp.StatusCode, "failed to post new message")
+		body := map[string]interface{}{}
+		if err := json.NewDecoder(rsp.Body).Decode(&body); err != nil {
+			return err
+		}
+		if message, ok := body["message"].(string); ok {
+			return errors.NewKnown(rsp.StatusCode, message)
+		}
+		return errors.NewKnown(rsp.StatusCode, "failed to send sms with code")
 	}
 
 	return nil
