@@ -8,5 +8,5 @@ import (
 
 type Store interface {
 	ReadProperty(context.Context, string) (*recyclingservices.Property, error)
-	WriteProperty(context.Context, recyclingservices.Property) error
+	WriteProperty(context.Context, string, []recyclingservices.Service) (*recyclingservices.Property, error)
 }

@@ -18,6 +18,8 @@ var Prodedures = []rpc.Procedure{
 		Response: WritePropertyResponse{},
 	},
 	{
+		// SyncProperty will fetch the latest collection times for the property
+		// and overwrite what's currently stored.
 		Name:     "SyncProperty",
 		Request:  SyncPropertyRequest{},
 		Response: SyncPropertyResponse{},

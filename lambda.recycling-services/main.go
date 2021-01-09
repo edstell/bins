@@ -26,7 +26,7 @@ func main() {
 		dynamodb.New(sess),
 		timeNowUTC,
 	)
-	handler := handler.New(domain.NewLogic(store), timeNowUTC)
+	handler := handler.New(domain.NewLogic(store))
 	router := recyclingservices.NewRouter(handler)
 	lambda.Start(router.Handler)
 }

@@ -55,10 +55,15 @@ func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*recycl
 	return property, nil
 }
 
-func (s *DynamoDB) WriteProperty(ctx context.Context, property recyclingservices.Property) error {
+func (s *DynamoDB) WriteProperty(ctx context.Context, propertyID string, services []recyclingservices.Service) (*recyclingservices.Property, error) {
+	property := &recyclingservices.Property{
+		ID:        propertyID,
+		Services:  services,
+		UpdatedAt: s.timeNow(),
+	}
 	item, err := dynamodbattribute.MarshalMap(property)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	input := &dynamodb.PutItemInput{
@@ -67,8 +72,8 @@ func (s *DynamoDB) WriteProperty(ctx context.Context, property recyclingservices
 	}
 
 	if _, err := s.db.PutItem(input); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return property, nil
 }
