@@ -31,8 +31,8 @@ func TestToList(t *testing.T) {
 
 func TestServicesTomorrow(t *testing.T) {
 	t.Parallel()
-	satNinth := time.Date(2021, 1, 9, 0, 0, 0, 0, time.UTC)
-	result, err := ServicesTomorrow(func() time.Time { return satNinth })(recyclingservices.Property{
+	friEigth := time.Date(2021, 1, 8, 0, 0, 0, 0, time.UTC)
+	result, err := ServicesTomorrow(func() time.Time { return friEigth })(recyclingservices.Property{
 		Services: []recyclingservices.Service{
 			{
 				Name: "General waste",

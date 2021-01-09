@@ -22,10 +22,11 @@ func (f MessageFunc) Format() (string, error) {
 
 func ServicesTomorrow(timeNow func() time.Time) func(recyclingservices.Property) Message {
 	t, err := template.New("ServicesTomorrow").Funcs(map[string]interface{}{
-		"timeNow":    timeNow,
-		"formatDate": formatDate,
-		"binList":    binList,
-	}).Parse(`Hey! You've got a collection tomorrow ({{timeNow|formatDate}}); don't forget to take your {{.Services|binList}} out.`)
+		"tomorrow": func() string {
+			return formatDate(timeNow().Add(time.Hour * 24))
+		},
+		"binList": binList,
+	}).Parse(`Hey! You've got a collection tomorrow ({{tomorrow}}); don't forget to take your {{.Services|binList}} out.`)
 	if err != nil {
 		panic(err)
 	}
@@ -71,7 +72,7 @@ func formatDate(t time.Time) string {
 
 func binList(services []recyclingservices.Service) string {
 	if len(services) == 1 {
-		return services[0].Name + " bin"
+		return fmt.Sprintf("'%s'", strings.ToLower(services[0].Name)) + " bin"
 	}
 	names := make([]string, 0, len(services))
 	for _, service := range services {
