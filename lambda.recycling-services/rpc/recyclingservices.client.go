@@ -12,8 +12,7 @@ type Client struct {
 	writeProperty rpc.Invoker
 }
 
-func NewClient(i rpc.LambdaInvoker) *Client {
-	arn := "arn:aws:lambda:eu-west-2:939344948739:function:RecyclingServices"
+func NewClient(i rpc.LambdaInvoker, arn string) *Client {
 	return &Client{
 		readProperty:  rpc.Client(i, arn, "ReadProperty"),
 		writeProperty: rpc.Client(i, arn, "WriteProperty"),

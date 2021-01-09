@@ -6,7 +6,7 @@ import (
 	recyclingservices "github.com/edstell/lambda/lambda.recycling-services/rpc"
 )
 
-type BusinessLogic interface {
+type Logic interface {
 	ReadProperty(context.Context, string) (*recyclingservices.Property, error)
 }
 
@@ -14,7 +14,7 @@ type logic struct {
 	client *recyclingservices.Client
 }
 
-func NewBusinessLogic(client *recyclingservices.Client) BusinessLogic {
+func NewLogic(client *recyclingservices.Client) Logic {
 	return &logic{
 		client: client,
 	}

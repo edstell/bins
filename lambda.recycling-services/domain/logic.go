@@ -7,7 +7,7 @@ import (
 	"github.com/edstell/lambda/lambda.recycling-services/store"
 )
 
-type BusinessLogic interface {
+type Logic interface {
 	ReadProperty(context.Context, string) (*recyclingservices.Property, error)
 	WriteProperty(context.Context, recyclingservices.Property) error
 }
@@ -16,7 +16,7 @@ type logic struct {
 	store.Store
 }
 
-func NewBusinessLogic(store store.Store) BusinessLogic {
+func NewLogic(store store.Store) Logic {
 	return &logic{
 		Store: store,
 	}

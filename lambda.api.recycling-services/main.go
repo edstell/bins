@@ -21,7 +21,8 @@ func main() {
 	lambdaService := svc.New(sess)
 	// Instrument the lambda client.
 	xray.AWS(lambdaService.Client)
-	logic := domain.NewBusinessLogic(recyclingservices.NewClient(lambdaService))
+	rsClient := recyclingservices.NewClient(lambdaService, os.Getenv("RECYCLING_SERVICES_ARN"))
+	logic := domain.NewLogic(rsClient)
 	router := api.NewRouter()
 	router.Route("GET", "/properties/{property}", handler.GETProperty(logic))
 	lambda.Start(router.Handler)
