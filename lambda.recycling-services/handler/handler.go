@@ -9,11 +9,11 @@ import (
 )
 
 type handler struct {
-	bl      domain.BusinessLogic
+	bl      domain.Logic
 	timeNow func() time.Time
 }
 
-func New(bl domain.BusinessLogic, timeNow func() time.Time) recyclingservices.Handler {
+func New(bl domain.Logic, timeNow func() time.Time) recyclingservices.Handler {
 	return &handler{
 		bl: bl,
 	}
@@ -41,4 +41,8 @@ func (h *handler) WriteProperty(ctx context.Context, req recyclingservices.Write
 	return &recyclingservices.WritePropertyResponse{
 		Property: property,
 	}, nil
+}
+
+func (h *handler) SyncProperty(ctx context.Context, body recyclingservices.SyncPropertyRequest) (*recyclingservices.SyncPropertyResponse, error) {
+	return nil, nil
 }

@@ -24,6 +24,13 @@ func (r WritePropertyRequest) Validate() error {
 	return nil
 }
 
+func (r SyncPropertyRequest) Validate() error {
+	if r.PropertyID == "" {
+		return errors.MissingParam("property_id")
+	}
+	return nil
+}
+
 func (s Service) Validate() error {
 	if s.Name == "" {
 		return errors.MissingParam("name")

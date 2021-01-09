@@ -7,7 +7,7 @@ import (
 	"github.com/edstell/lambda/libraries/api"
 )
 
-func GETProperty(logic domain.BusinessLogic) api.Handler {
+func GETProperty(logic domain.Logic) api.Handler {
 	return func(ctx context.Context, req api.Request) (*api.Response, error) {
 		property, err := logic.ReadProperty(ctx, req.PathParameters["property"])
 		if err != nil {

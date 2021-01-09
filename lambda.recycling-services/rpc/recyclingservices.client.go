@@ -10,12 +10,14 @@ import (
 type Client struct {
 	readProperty  rpc.Invoker
 	writeProperty rpc.Invoker
+	syncProperty  rpc.Invoker
 }
 
 func NewClient(i rpc.LambdaInvoker, arn string) *Client {
 	return &Client{
 		readProperty:  rpc.Client(i, arn, "ReadProperty"),
 		writeProperty: rpc.Client(i, arn, "WriteProperty"),
+		syncProperty:  rpc.Client(i, arn, "SyncProperty"),
 	}
 }
 
@@ -50,6 +52,25 @@ func (c *Client) WriteProperty(ctx context.Context, req WritePropertyRequest) (*
 	}
 
 	out := &WritePropertyResponse{}
+	if err := json.Unmarshal(rsp, out); err != nil {
+		return nil, err
+	}
+
+	return out, nil
+}
+
+func (c *Client) SyncProperty(ctx context.Context, req SyncPropertyRequest) (*SyncPropertyResponse, error) {
+	payload, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	rsp, err := c.syncProperty.Invoke(ctx, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	out := &SyncPropertyResponse{}
 	if err := json.Unmarshal(rsp, out); err != nil {
 		return nil, err
 	}

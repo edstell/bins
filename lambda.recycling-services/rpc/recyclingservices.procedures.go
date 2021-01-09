@@ -17,6 +17,11 @@ var Prodedures = []rpc.Procedure{
 		Request:  WritePropertyRequest{},
 		Response: WritePropertyResponse{},
 	},
+	{
+		Name:     "SyncProperty",
+		Request:  SyncPropertyRequest{},
+		Response: SyncPropertyResponse{},
+	},
 }
 
 type Property struct {
@@ -47,5 +52,13 @@ type WritePropertyRequest struct {
 }
 
 type WritePropertyResponse struct {
+	Property Property `json:"property"`
+}
+
+type SyncPropertyRequest struct {
+	PropertyID string `json:"property_id"`
+}
+
+type SyncPropertyResponse struct {
 	Property Property `json:"property"`
 }
