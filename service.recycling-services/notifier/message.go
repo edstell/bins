@@ -10,6 +10,18 @@ import (
 	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
 )
 
+type Services []recyclingservices.Service
+
+func (ss Services) Filter(pred func(recyclingservices.Service) bool) Services {
+	filtered := make([]recyclingservices.Service, 0, len(ss))
+	for _, s := range ss {
+		if pred(s) {
+			filtered = append(filtered, s)
+		}
+	}
+	return filtered
+}
+
 type Message interface {
 	Format() (string, error)
 }
@@ -41,10 +53,45 @@ func ServicesTomorrow(timeNow func() time.Time) func(recyclingservices.Property)
 	}
 }
 
-func ServicesThisWeek(timeNow func() time.Time) func(recyclingservices.Property) Message {
+func ServicesNextWeek(timeNow func() time.Time) func(recyclingservices.Property) Message {
+	now := timeNow()
+	start := time.Date(now.Year(), now.Month(), now.Day()+int(7-now.Weekday()), 0, 0, 0, 0, time.UTC)
+	end := start.Add(7 * 24 * time.Hour)
+	t, err := template.New("ServicesNextWeek").Funcs(
+		map[string]interface{}{
+			"weekstart": func() string {
+				return formatDate(start)
+			},
+			"listCollections": listCollections,
+		},
+	).Parse(`Hey! You have {{len .Collections}} collection[s] next week (w/c {{weekstart}}){{if .Collections}}: {{.Collections|listCollections}}{{end}}`)
+	if err != nil {
+		panic(err)
+	}
+	inRange := func(service recyclingservices.Service) bool {
+		return service.NextService.After(start.Add(-1)) && service.NextService.Before(end.Add(1))
+	}
+	type input struct {
+		Collections map[time.Weekday][]recyclingservices.Service
+	}
 	return func(property recyclingservices.Property) Message {
+		collections := map[time.Weekday][]recyclingservices.Service{}
+		for _, service := range Services(property.Services).Filter(inRange) {
+			services, ok := collections[service.NextService.Weekday()]
+			if !ok {
+				services = []recyclingservices.Service{}
+			}
+			collections[service.NextService.Weekday()] = append(services, service)
+		}
+		var out bytes.Buffer
+		err := t.Execute(&out, input{
+			Collections: collections,
+		})
 		return MessageFunc(func() (string, error) {
-			return "", nil
+			if err != nil {
+				return "", err
+			}
+			return out.String(), nil
 		})
 	}
 }
@@ -80,4 +127,20 @@ func binList(services []recyclingservices.Service) string {
 	}
 	list := strings.Join(names[:len(names)-1], ", ")
 	return list + " and " + names[len(names)-1] + " bins"
+}
+
+func listCollections(collections map[time.Weekday][]recyclingservices.Service) string {
+	list := ""
+	i := 0
+	for weekday, services := range collections {
+		sep := ", "
+		if i == 0 {
+			sep = ""
+		} else if i == len(collections)-1 {
+			sep = " and "
+		}
+		list = list + sep + binList(services) + " on " + fmt.Sprint(weekday)
+		i++
+	}
+	return list + "."
 }

@@ -94,14 +94,14 @@ func (h *handler) NotifyProperty(ctx context.Context, body recyclingservices.Not
 
 func propertyMessageFunc(timeNow func() time.Time) func(string, recyclingservices.Property) (notifier.Message, error) {
 	servicesTomorrow := notifier.ServicesTomorrow(timeNow)
-	servicesThisWeek := notifier.ServicesThisWeek(timeNow)
+	servicesNextWeek := notifier.ServicesNextWeek(timeNow)
 	describeProperty := notifier.DescribeProperty()
 	return func(typ string, property recyclingservices.Property) (notifier.Message, error) {
 		switch typ {
 		case recyclingservices.MessageServicesTomorrow:
 			return servicesTomorrow(property), nil
-		case recyclingservices.MessageServicesThisWeek:
-			return servicesThisWeek(property), nil
+		case recyclingservices.MessageServicesNextWeek:
+			return servicesNextWeek(property), nil
 		case recyclingservices.MessageDescribeProperty:
 			return describeProperty(property), nil
 		default:

@@ -48,3 +48,26 @@ func TestServicesTomorrow(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "Hey! You've got a collection tomorrow (Sat 9th); don't forget to take your 'general waste', 'plastic and tins' and 'cardboard' bins out.", result)
 }
+
+func TestServicesNextWeek(t *testing.T) {
+	t.Parallel()
+	satNinth := time.Date(2021, 1, 9, 0, 0, 0, 0, time.UTC)
+	result, err := ServicesNextWeek(func() time.Time { return satNinth })(recyclingservices.Property{
+		Services: []recyclingservices.Service{
+			{
+				Name:        "General waste",
+				NextService: time.Date(satNinth.Year(), satNinth.Month(), satNinth.Day()+2, 0, 0, 0, 0, time.UTC),
+			},
+			{
+				Name:        "Plastic and tins",
+				NextService: time.Date(satNinth.Year(), satNinth.Month(), satNinth.Day()+2, 0, 0, 0, 0, time.UTC),
+			},
+			{
+				Name:        "Cardboard",
+				NextService: time.Date(satNinth.Year(), satNinth.Month(), satNinth.Day()+3, 0, 0, 0, 0, time.UTC),
+			},
+		},
+	}).Format()
+	require.NoError(t, err)
+	assert.Equal(t, "Hey! You have 2 collection[s] next week (w/c Sun 10th): 'general waste' and 'plastic and tins' bins on Monday and 'cardboard' bin on Tuesday.", result)
+}
