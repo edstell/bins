@@ -3,7 +3,7 @@ package recyclingservicesproto;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "proto";
+option go_package = "github.com/edstell/lambda/service.recycling-services/proto/recyclingservicesproto";
 
 service recycling_services {
     rpc ReadProperty (ReadPropertyRequest) returns (ReadPropertyResponse);
