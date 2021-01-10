@@ -1,4 +1,4 @@
-package recyclingservices
+package recyclingservicesproto
 
 const (
 	MessageServicesTomorrow = "services-tomorrow"

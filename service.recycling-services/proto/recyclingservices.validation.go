@@ -1,4 +1,4 @@
-package recyclingservices
+package recyclingservicesproto
 
 import "github.com/edstell/lambda/libraries/errors"
 

@@ -1,0 +1,59 @@
+syntax = "proto3";
+package recyclingservicesproto;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "proto";
+
+service recycling_services {
+    rpc ReadProperty (ReadPropertyRequest) returns (ReadPropertyResponse);
+    rpc SyncProperty (SyncPropertyRequest) returns (SyncPropertyResponse);
+    rpc NotifyProperty (NotifyPropertyRequest) returns (NotifyPropertyResponse);
+}
+
+message Service {
+    string name = 1;
+    string status = 2;
+    string schedule = 3;
+    google.protobuf.Timestamp last_service = 4;
+    google.protobuf.Timestamp next_service = 5;
+}
+
+message Property {
+    string id = 1;
+    repeated Service services = 2;
+    google.protobuf.Timestamp updated_at = 3;
+}
+
+message ReadPropertyRequest {
+    string property_id = 1;
+}
+
+message ReadPropertyResponse {
+    Property property = 1;
+}
+
+message SyncPropertyRequest {
+    string property_id = 1;
+}
+
+message SyncPropertyResponse {
+    Property property = 1;
+}
+
+message Notifier {
+    oneof notifier {
+        SMS sms = 1;
+    }
+    message SMS {
+        string phone_number = 1;
+    }
+}
+
+message NotifyPropertyRequest {
+    string property_id = 1;
+    string message_name = 2;
+    Notifier notifier = 3;
+}
+
+message NotifyPropertyResponse {}
