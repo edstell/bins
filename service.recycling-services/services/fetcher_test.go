@@ -8,10 +8,9 @@ import (
 	"testing"
 	"time"
 
-	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
+	"github.com/edstell/lambda/service.recycling-services/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestWebScraper(t *testing.T) {
@@ -24,41 +23,41 @@ func TestWebScraper(t *testing.T) {
 	result, err := scraper.Fetch(context.Background(), "property_id")
 	require.NoError(t, err)
 	fmt.Println(result)
-	for i, service := range []*recyclingservicesproto.Service{
+	for i, service := range []domain.Service{
 		{
 			Name:        "Non-recyclable refuse",
 			Status:      "Not completed.",
 			Schedule:    "Thursday every other week",
-			LastService: timestamppb.New(time.Date(2020, 12, 17, 0, 0, 0, 0, time.UTC)),
-			NextService: timestamppb.New(time.Date(2021, 1, 4, 0, 0, 0, 0, time.UTC)),
+			LastService: time.Date(2020, 12, 17, 0, 0, 0, 0, time.UTC),
+			NextService: time.Date(2021, 1, 4, 0, 0, 0, 0, time.UTC),
 		},
 		{
 			Name:        "Paper and cardboard",
 			Status:      "Not completed.",
 			Schedule:    "Thursday every other week",
-			LastService: timestamppb.New(time.Date(2020, 12, 17, 0, 0, 0, 0, time.UTC)),
-			NextService: timestamppb.New(time.Date(2021, 1, 4, 0, 0, 0, 0, time.UTC)),
+			LastService: time.Date(2020, 12, 17, 0, 0, 0, 0, time.UTC),
+			NextService: time.Date(2021, 1, 4, 0, 0, 0, 0, time.UTC),
 		},
 		{
 			Name:        "Green Garden Waste (Subscription)",
 			Status:      "Your road was completed on 09/12/2020 at 09:27.",
 			Schedule:    "Wednesday every 4th week",
-			LastService: timestamppb.New(time.Date(2020, 12, 9, 0, 0, 0, 0, time.UTC)),
-			NextService: timestamppb.New(time.Date(2021, 1, 20, 0, 0, 0, 0, time.UTC)),
+			LastService: time.Date(2020, 12, 9, 0, 0, 0, 0, time.UTC),
+			NextService: time.Date(2021, 1, 20, 0, 0, 0, 0, time.UTC),
 		},
 		{
 			Name:        "Food waste",
 			Status:      "Not completed.",
 			Schedule:    "Thursday every week",
-			LastService: timestamppb.New(time.Date(2020, 12, 24, 0, 0, 0, 0, time.UTC)),
-			NextService: timestamppb.New(time.Date(2021, 1, 4, 0, 0, 0, 0, time.UTC)),
+			LastService: time.Date(2020, 12, 24, 0, 0, 0, 0, time.UTC),
+			NextService: time.Date(2021, 1, 4, 0, 0, 0, 0, time.UTC),
 		},
 		{
 			Name:        "Plastic, glass and tins",
 			Status:      "Your road was completed on 24/12/2020 at 08:49.",
 			Schedule:    "Thursday every other week",
-			LastService: timestamppb.New(time.Date(2020, 12, 24, 0, 0, 0, 0, time.UTC)),
-			NextService: timestamppb.New(time.Date(2021, 1, 9, 0, 0, 0, 0, time.UTC)),
+			LastService: time.Date(2020, 12, 24, 0, 0, 0, 0, time.UTC),
+			NextService: time.Date(2021, 1, 9, 0, 0, 0, 0, time.UTC),
 		},
 		{
 			Name: "Batteries, small electrical items and textiles",

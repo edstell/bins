@@ -4,10 +4,9 @@ import (
 	"testing"
 	"time"
 
-	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
+	"github.com/edstell/lambda/service.recycling-services/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestFormatDate(t *testing.T) {
@@ -17,7 +16,7 @@ func TestFormatDate(t *testing.T) {
 
 func TestToList(t *testing.T) {
 	t.Parallel()
-	assert.Equal(t, binList([]*recyclingservicesproto.Service{
+	assert.Equal(t, binList([]domain.Service{
 		{
 			Name: "General waste",
 		},
@@ -33,8 +32,8 @@ func TestToList(t *testing.T) {
 func TestServicesTomorrow(t *testing.T) {
 	t.Parallel()
 	friEigth := time.Date(2021, 1, 8, 0, 0, 0, 0, time.UTC)
-	result, err := ServicesTomorrow(func() time.Time { return friEigth })(&recyclingservicesproto.Property{
-		Services: []*recyclingservicesproto.Service{
+	result, err := ServicesTomorrow(func() time.Time { return friEigth })(domain.Property{
+		Services: []domain.Service{
 			{
 				Name: "General waste",
 			},
@@ -53,19 +52,19 @@ func TestServicesTomorrow(t *testing.T) {
 func TestServicesNextWeek(t *testing.T) {
 	t.Parallel()
 	satNinth := time.Date(2021, 1, 9, 0, 0, 0, 0, time.UTC)
-	result, err := ServicesNextWeek(func() time.Time { return satNinth })(&recyclingservicesproto.Property{
-		Services: []*recyclingservicesproto.Service{
+	result, err := ServicesNextWeek(func() time.Time { return satNinth })(domain.Property{
+		Services: []domain.Service{
 			{
 				Name:        "General waste",
-				NextService: timestamppb.New(time.Date(satNinth.Year(), satNinth.Month(), satNinth.Day()+2, 0, 0, 0, 0, time.UTC)),
+				NextService: time.Date(satNinth.Year(), satNinth.Month(), satNinth.Day()+2, 0, 0, 0, 0, time.UTC),
 			},
 			{
 				Name:        "Plastic and tins",
-				NextService: timestamppb.New(time.Date(satNinth.Year(), satNinth.Month(), satNinth.Day()+2, 0, 0, 0, 0, time.UTC)),
+				NextService: time.Date(satNinth.Year(), satNinth.Month(), satNinth.Day()+2, 0, 0, 0, 0, time.UTC),
 			},
 			{
 				Name:        "Cardboard",
-				NextService: timestamppb.New(time.Date(satNinth.Year(), satNinth.Month(), satNinth.Day()+3, 0, 0, 0, 0, time.UTC)),
+				NextService: time.Date(satNinth.Year(), satNinth.Month(), satNinth.Day()+3, 0, 0, 0, 0, time.UTC),
 			},
 		},
 	}).Format()

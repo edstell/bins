@@ -10,8 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"github.com/edstell/lambda/libraries/errors"
-	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"github.com/edstell/lambda/service.recycling-services/domain"
 )
 
 type DynamoDB struct {
@@ -30,7 +29,7 @@ func NewDynamoDB(db dynamodbiface.DynamoDBAPI, timeNow func() time.Time) *Dynamo
 	}
 }
 
-func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*recyclingservicesproto.Property, error) {
+func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*domain.Property, error) {
 	input := &dynamodb.GetItemInput{
 		TableName: aws.String(s.propertyTableName),
 		Key: map[string]*dynamodb.AttributeValue{
@@ -48,7 +47,7 @@ func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*recycl
 		return nil, errors.NotFound(fmt.Sprintf("property: %s", propertyID))
 	}
 
-	property := &recyclingservicesproto.Property{}
+	property := &domain.Property{}
 	if err := dynamodbattribute.UnmarshalMap(result.Item, property); err != nil {
 		return nil, err
 	}
@@ -56,11 +55,11 @@ func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*recycl
 	return property, nil
 }
 
-func (s *DynamoDB) WriteProperty(ctx context.Context, propertyID string, services []*recyclingservicesproto.Service) (*recyclingservicesproto.Property, error) {
-	property := &recyclingservicesproto.Property{
-		Id:        propertyID,
+func (s *DynamoDB) WriteProperty(ctx context.Context, propertyID string, services []domain.Service) (*domain.Property, error) {
+	property := &domain.Property{
+		ID:        propertyID,
 		Services:  services,
-		UpdatedAt: timestamppb.New(s.timeNow()),
+		UpdatedAt: s.timeNow(),
 	}
 	item, err := dynamodbattribute.MarshalMap(property)
 	if err != nil {

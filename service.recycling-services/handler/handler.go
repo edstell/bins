@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/edstell/lambda/libraries/errors"
+	"github.com/edstell/lambda/service.recycling-services/domain"
 	"github.com/edstell/lambda/service.recycling-services/notifier"
 	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
 	"github.com/edstell/lambda/service.recycling-services/services"
@@ -18,7 +19,7 @@ type handler struct {
 	client          *twilio.Client
 	fetcher         services.Fetcher
 	timeNow         func() time.Time
-	propertyMessage func(string, recyclingservicesproto.Property) (notifier.Message, error)
+	propertyMessage func(string, domain.Property) (notifier.Message, error)
 }
 
 func New(store store.Store, client *twilio.Client, timeNow func() time.Time) recyclingservicesproto.Handler {
@@ -36,17 +37,17 @@ func New(store store.Store, client *twilio.Client, timeNow func() time.Time) rec
 	}
 }
 
-func (h *handler) ReadProperty(ctx context.Context, body recyclingservicesproto.ReadPropertyRequest) (*recyclingservicesproto.ReadPropertyResponse, error) {
+func (h *handler) ReadProperty(ctx context.Context, body *recyclingservicesproto.ReadPropertyRequest) (*recyclingservicesproto.ReadPropertyResponse, error) {
 	property, err := h.store.ReadProperty(ctx, body.PropertyId)
 	if err != nil {
 		return nil, err
 	}
 	return &recyclingservicesproto.ReadPropertyResponse{
-		Property: property,
+		Property: property.ToProto(),
 	}, nil
 }
 
-func (h *handler) SyncProperty(ctx context.Context, body recyclingservicesproto.SyncPropertyRequest) (*recyclingservicesproto.SyncPropertyResponse, error) {
+func (h *handler) SyncProperty(ctx context.Context, body *recyclingservicesproto.SyncPropertyRequest) (*recyclingservicesproto.SyncPropertyResponse, error) {
 	services, err := h.fetcher.Fetch(ctx, body.PropertyId)
 	if err != nil {
 		return nil, err
@@ -59,11 +60,11 @@ func (h *handler) SyncProperty(ctx context.Context, body recyclingservicesproto.
 		return nil, err
 	}
 	return &recyclingservicesproto.SyncPropertyResponse{
-		Property: property,
+		Property: property.ToProto(),
 	}, nil
 }
 
-func (h *handler) NotifyProperty(ctx context.Context, body recyclingservicesproto.NotifyPropertyRequest) (*recyclingservicesproto.NotifyPropertyResponse, error) {
+func (h *handler) NotifyProperty(ctx context.Context, body *recyclingservicesproto.NotifyPropertyRequest) (*recyclingservicesproto.NotifyPropertyResponse, error) {
 	_, err := h.store.ReadProperty(ctx, body.PropertyId)
 	if err != nil {
 		return nil, err
@@ -82,11 +83,11 @@ func (h *handler) NotifyProperty(ctx context.Context, body recyclingservicesprot
 	return &recyclingservicesproto.NotifyPropertyResponse{}, nil
 }
 
-func propertyMessageFunc(timeNow func() time.Time) func(string, *recyclingservicesproto.Property) (notifier.Message, error) {
+func propertyMessageFunc(timeNow func() time.Time) func(string, domain.Property) (notifier.Message, error) {
 	servicesTomorrow := notifier.ServicesTomorrow(timeNow)
 	servicesNextWeek := notifier.ServicesNextWeek(timeNow)
 	describeProperty := notifier.DescribeProperty()
-	return func(typ string, property *recyclingservicesproto.Property) (notifier.Message, error) {
+	return func(typ string, property domain.Property) (notifier.Message, error) {
 		switch typ {
 		case recyclingservicesproto.MessageServicesTomorrow:
 			return servicesTomorrow(property), nil
