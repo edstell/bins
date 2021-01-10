@@ -3,13 +3,15 @@ package {{.Package}}
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/edstell/lambda/libraries/rpc"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 {{range .Service}}
-type Handler interface {{{range .Method}}
-	{{.Name}}(context.Context, {{.InputType}}) (*{{.OutputType}}, error){{end}}
+type Handler interface {
+	{{- range .Method}}
+	{{.Name}}(context.Context, *{{.InputType|rhs}}) (*{{.OutputType|rhs}}, error)
+	{{- end}}
 }
 
 type Router struct {
@@ -17,26 +19,29 @@ type Router struct {
 }
 
 func NewRouter(handler Handler) *Router {
-	router := rpc.NewRouter(){{range .Method}}
-	router.Route("{{.Name}}", {{.Name}}(handler.{{.Name}})){{end}}
+	router := rpc.NewRouter()
+	{{- range .Method}}
+	router.Route("{{.Name}}", {{.Name|toLower}}(handler.{{.Name}}))
+	{{- end}}
 	return &Router{
 		Router: router,
 	}
 }
-{{range .Method}}
-func {{.Name}}(handler func(context.Context, {{.InputType}}) (*{{.OutputType}}, error)) rpc.Handler {
+{{- range .Method}}
+
+func {{.Name|toLower}}(handler func(context.Context, *{{.InputType|rhs}}) (*{{.OutputType|rhs}}, error)) rpc.Handler {
 	return func(ctx context.Context, req rpc.Request) (*rpc.Response, error) {
-		body := &{{.InputType}}{}
-		if err := json.Unmarshal(req.Body, body); err != nil {
+		body := &{{.InputType|rhs}}{}
+		if err := protojson.Unmarshal(req.Body, body); err != nil {
 			return nil, err
 		}
 
-		rsp, err := handler(ctx, *body)
+		rsp, err := handler(ctx, body)
 		if err != nil {
 			return nil, err
 		}
 
-		bytes, err := json.Marshal(rsp)
+		bytes, err := protojson.Marshal(rsp)
 		if err != nil {
 			return nil, err
 		}
@@ -45,4 +50,6 @@ func {{.Name}}(handler func(context.Context, {{.InputType}}) (*{{.OutputType}}, 
 			Body: bytes,
 		}, nil
 	}
-}{{end}}{{end}}
+}
+{{- end}}
+{{- end}}

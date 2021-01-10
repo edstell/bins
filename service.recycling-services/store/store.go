@@ -3,10 +3,10 @@ package store
 import (
 	"context"
 
-	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
+	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
 )
 
 type Store interface {
-	ReadProperty(context.Context, string) (*recyclingservices.Property, error)
-	WriteProperty(context.Context, string, []recyclingservices.Service) (*recyclingservices.Property, error)
+	ReadProperty(context.Context, string) (*recyclingservicesproto.Property, error)
+	WriteProperty(context.Context, string, []*recyclingservicesproto.Service) (*recyclingservicesproto.Property, error)
 }

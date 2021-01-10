@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/edstell/lambda/tools/protoc-gen-router/templates"
+	"github.com/edstell/lambda/tools/protoc-gen-client/templates"
 	"github.com/golang/protobuf/proto"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
 )
@@ -23,12 +23,12 @@ func main() {
 		panic(err)
 	}
 
-	data, err = templates.Asset("router.gotmpl")
+	data, err = templates.Asset("client.gotmpl")
 	if err != nil {
 		panic(err)
 	}
 
-	t, err := template.New("router.gotmpl").Funcs(map[string]interface{}{
+	t, err := template.New("client.gotmpl").Funcs(map[string]interface{}{
 		"toLower": strings.ToLower,
 		"rhs": func(s string) string {
 			ss := strings.Split(s, ".")
@@ -41,7 +41,7 @@ func main() {
 
 	files := make([]*plugin.CodeGeneratorResponse_File, 0, len(req.ProtoFile))
 	for _, protoFile := range req.ProtoFile {
-		name := strings.Replace(*protoFile.Name, "proto", "router.go", -1)
+		name := strings.Replace(*protoFile.Name, "proto", "client.go", -1)
 		file := &plugin.CodeGeneratorResponse_File{
 			Name: &name,
 		}

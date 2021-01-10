@@ -10,7 +10,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"github.com/edstell/lambda/libraries/errors"
-	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
+	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type DynamoDB struct {
@@ -25,11 +26,11 @@ func NewDynamoDB(db dynamodbiface.DynamoDBAPI, timeNow func() time.Time) *Dynamo
 	return &DynamoDB{
 		db:                db,
 		timeNow:           timeNow,
-		propertyTableName: "RecyclingServicesProperty",
+		propertyTableName: "recyclingservicesprotoProperty",
 	}
 }
 
-func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*recyclingservices.Property, error) {
+func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*recyclingservicesproto.Property, error) {
 	input := &dynamodb.GetItemInput{
 		TableName: aws.String(s.propertyTableName),
 		Key: map[string]*dynamodb.AttributeValue{
@@ -47,7 +48,7 @@ func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*recycl
 		return nil, errors.NotFound(fmt.Sprintf("property: %s", propertyID))
 	}
 
-	property := &recyclingservices.Property{}
+	property := &recyclingservicesproto.Property{}
 	if err := dynamodbattribute.UnmarshalMap(result.Item, property); err != nil {
 		return nil, err
 	}
@@ -55,11 +56,11 @@ func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*recycl
 	return property, nil
 }
 
-func (s *DynamoDB) WriteProperty(ctx context.Context, propertyID string, services []recyclingservices.Service) (*recyclingservices.Property, error) {
-	property := &recyclingservices.Property{
-		ID:        propertyID,
+func (s *DynamoDB) WriteProperty(ctx context.Context, propertyID string, services []*recyclingservicesproto.Service) (*recyclingservicesproto.Property, error) {
+	property := &recyclingservicesproto.Property{
+		Id:        propertyID,
 		Services:  services,
-		UpdatedAt: s.timeNow(),
+		UpdatedAt: timestamppb.New(s.timeNow()),
 	}
 	item, err := dynamodbattribute.MarshalMap(property)
 	if err != nil {

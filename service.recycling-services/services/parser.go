@@ -6,31 +6,32 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
+	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Parser implementations should extract services from raw bytes.
 type Parser interface {
-	Parse([]byte) ([]recyclingservices.Service, error)
+	Parse([]byte) ([]*recyclingservicesproto.Service, error)
 }
 
-type ParserFunc func([]byte) ([]recyclingservices.Service, error)
+type ParserFunc func([]byte) ([]*recyclingservicesproto.Service, error)
 
-func (f ParserFunc) Parse(b []byte) ([]recyclingservices.Service, error) {
+func (f ParserFunc) Parse(b []byte) ([]*recyclingservicesproto.Service, error) {
 	return f(b)
 }
 
 // ParseHTML will extract services from webpage HTML.
-var ParseHTML = ParserFunc(func(html []byte) ([]recyclingservices.Service, error) {
+var ParseHTML = ParserFunc(func(html []byte) ([]*recyclingservicesproto.Service, error) {
 	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(html))
 	if err != nil {
 		return nil, err
 	}
 
 	sel := doc.Find(".results-table-wrapper")
-	services := []recyclingservices.Service{}
+	services := []*recyclingservicesproto.Service{}
 	sel.Find(".service-wrapper").Each(func(_ int, sel *goquery.Selection) {
-		service := recyclingservices.Service{}
+		service := &recyclingservicesproto.Service{}
 		service.Name = strings.TrimSpace(sel.Find(".service-name").Text())
 		service.Status = strings.TrimPrefix(strings.TrimSpace(sel.Find(".task-state").Text()), "Last collection: ")
 		sel.Find("tr").EachWithBreak(func(i int, sel *goquery.Selection) bool {
@@ -47,7 +48,7 @@ var ParseHTML = ParserFunc(func(html []byte) ([]recyclingservices.Service, error
 					if err != nil {
 						return
 					}
-					service.LastService = last
+					service.LastService = timestamppb.New(last)
 				case strings.Contains(text, "Next Service"):
 					next, err := time.Parse(
 						"02/01/2006",
@@ -56,7 +57,7 @@ var ParseHTML = ParserFunc(func(html []byte) ([]recyclingservices.Service, error
 					if err != nil {
 						return
 					}
-					service.NextService = next
+					service.NextService = timestamppb.New(next)
 				}
 			})
 			return i == 0

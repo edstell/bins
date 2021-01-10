@@ -7,13 +7,13 @@ import (
 	"text/template"
 	"time"
 
-	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
+	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
 )
 
-type Services []recyclingservices.Service
+type Services []*recyclingservicesproto.Service
 
-func (ss Services) Filter(pred func(recyclingservices.Service) bool) Services {
-	filtered := make([]recyclingservices.Service, 0, len(ss))
+func (ss Services) Filter(pred func(*recyclingservicesproto.Service) bool) Services {
+	filtered := make([]*recyclingservicesproto.Service, 0, len(ss))
 	for _, s := range ss {
 		if pred(s) {
 			filtered = append(filtered, s)
@@ -32,7 +32,7 @@ func (f MessageFunc) Format() (string, error) {
 	return f()
 }
 
-func ServicesTomorrow(timeNow func() time.Time) func(recyclingservices.Property) Message {
+func ServicesTomorrow(timeNow func() time.Time) func(*recyclingservicesproto.Property) Message {
 	t, err := template.New("ServicesTomorrow").Funcs(map[string]interface{}{
 		"tomorrow": func() string {
 			return formatDate(timeNow().Add(time.Hour * 24))
@@ -42,7 +42,7 @@ func ServicesTomorrow(timeNow func() time.Time) func(recyclingservices.Property)
 	if err != nil {
 		panic(err)
 	}
-	return func(property recyclingservices.Property) Message {
+	return func(property *recyclingservicesproto.Property) Message {
 		return MessageFunc(func() (string, error) {
 			var out bytes.Buffer
 			if err := t.Execute(&out, property); err != nil {
@@ -53,7 +53,7 @@ func ServicesTomorrow(timeNow func() time.Time) func(recyclingservices.Property)
 	}
 }
 
-func ServicesNextWeek(timeNow func() time.Time) func(recyclingservices.Property) Message {
+func ServicesNextWeek(timeNow func() time.Time) func(*recyclingservicesproto.Property) Message {
 	now := timeNow()
 	start := time.Date(now.Year(), now.Month(), now.Day()+int(7-now.Weekday()), 0, 0, 0, 0, time.UTC)
 	end := start.Add(7 * 24 * time.Hour)
@@ -68,20 +68,20 @@ func ServicesNextWeek(timeNow func() time.Time) func(recyclingservices.Property)
 	if err != nil {
 		panic(err)
 	}
-	inRange := func(service recyclingservices.Service) bool {
-		return service.NextService.After(start.Add(-1)) && service.NextService.Before(end.Add(1))
+	inRange := func(service *recyclingservicesproto.Service) bool {
+		return service.NextService.AsTime().After(start.Add(-1)) && service.NextService.AsTime().Before(end.Add(1))
 	}
 	type input struct {
-		Collections map[time.Weekday][]recyclingservices.Service
+		Collections map[time.Weekday][]*recyclingservicesproto.Service
 	}
-	return func(property recyclingservices.Property) Message {
-		collections := map[time.Weekday][]recyclingservices.Service{}
+	return func(property *recyclingservicesproto.Property) Message {
+		collections := map[time.Weekday][]*recyclingservicesproto.Service{}
 		for _, service := range Services(property.Services).Filter(inRange) {
-			services, ok := collections[service.NextService.Weekday()]
+			services, ok := collections[service.NextService.AsTime().Weekday()]
 			if !ok {
-				services = []recyclingservices.Service{}
+				services = []*recyclingservicesproto.Service{}
 			}
-			collections[service.NextService.Weekday()] = append(services, service)
+			collections[service.NextService.AsTime().Weekday()] = append(services, service)
 		}
 		var out bytes.Buffer
 		err := t.Execute(&out, input{
@@ -96,8 +96,8 @@ func ServicesNextWeek(timeNow func() time.Time) func(recyclingservices.Property)
 	}
 }
 
-func DescribeProperty() func(recyclingservices.Property) Message {
-	return func(property recyclingservices.Property) Message {
+func DescribeProperty() func(*recyclingservicesproto.Property) Message {
+	return func(property *recyclingservicesproto.Property) Message {
 		return MessageFunc(func() (string, error) {
 			return "", nil
 		})
@@ -117,7 +117,7 @@ func formatDate(t time.Time) string {
 	return t.Format("Mon 2") + suffix
 }
 
-func binList(services []recyclingservices.Service) string {
+func binList(services []*recyclingservicesproto.Service) string {
 	if len(services) == 1 {
 		return fmt.Sprintf("'%s'", strings.ToLower(services[0].Name)) + " bin"
 	}
@@ -129,7 +129,7 @@ func binList(services []recyclingservices.Service) string {
 	return list + " and " + names[len(names)-1] + " bins"
 }
 
-func listCollections(collections map[time.Weekday][]recyclingservices.Service) string {
+func listCollections(collections map[time.Weekday][]*recyclingservicesproto.Service) string {
 	list := ""
 	i := 0
 	for weekday, services := range collections {
