@@ -4,13 +4,13 @@ import (
 	"context"
 
 	"github.com/edstell/lambda/libraries/api"
-	recyclingservices "github.com/edstell/lambda/service.recycling-services/rpc"
+	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
 )
 
-func GETProperty(client *recyclingservices.Client) api.Handler {
+func GETProperty(client *recyclingservicesproto.Client) api.Handler {
 	return func(ctx context.Context, req api.Request) (*api.Response, error) {
-		rsp, err := client.ReadProperty(ctx, recyclingservices.ReadPropertyRequest{
-			PropertyID: req.PathParameters["property"],
+		rsp, err := client.ReadProperty(ctx, &recyclingservicesproto.ReadPropertyRequest{
+			PropertyId: req.PathParameters["property"],
 		})
 		if err != nil {
 			return nil, err
