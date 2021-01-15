@@ -20,6 +20,6 @@ files=$(find $ROOT -maxdepth 3 -type f -name "*.proto")
 for f in $files; do
 	out=$(dirname "$f")
 	echo "Compiling $f";
-	protoc -I=$out --go_out=paths=source_relative:$out --service_out=paths=source_relative:$out $f;
-	rm -rf $out/google
+	protoc --proto_path=$GOPATH/src --go_out=paths=source_relative:$out --service_out=paths=source_relative:$out $f;
+	rm -rf $out/github.com
 done

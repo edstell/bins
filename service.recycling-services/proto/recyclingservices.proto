@@ -2,6 +2,7 @@ syntax = "proto3";
 package recyclingservicesproto;
 
 import "google/protobuf/timestamp.proto";
+import "github.com/edstell/lambda/tools/protoc-gen-service/proto/validator/validator.proto";
 
 option go_package = "github.com/edstell/lambda/service.recycling-services/proto/recyclingservicesproto";
 
@@ -26,7 +27,7 @@ message Property {
 }
 
 message ReadPropertyRequest {
-    string property_id = 1;
+    string property_id = 1 [(validation) = "required"];
 }
 
 message ReadPropertyResponse {
@@ -34,7 +35,7 @@ message ReadPropertyResponse {
 }
 
 message SyncPropertyRequest {
-    string property_id = 1;
+    string property_id = 1 [(validation) = "required"];
 }
 
 message SyncPropertyResponse {
@@ -51,9 +52,9 @@ message Notifier {
 }
 
 message NotifyPropertyRequest {
-    string property_id = 1;
-    string message_name = 2;
-    Notifier notifier = 3;
+    string property_id = 1 [(validation) = "required"];
+    string message_name = 2 [(validation) = "required"];
+    Notifier notifier = 3 [(validation) = "required"];
 }
 
 message NotifyPropertyResponse {}

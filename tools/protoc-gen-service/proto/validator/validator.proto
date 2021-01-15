@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/edstell/lambda/tools/protoc-gen-service/proto/validator/validator";
+
+extend google.protobuf.FieldOptions {
+    string validation = 6000;
+}
