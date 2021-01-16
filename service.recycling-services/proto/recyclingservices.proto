@@ -2,6 +2,7 @@ syntax = "proto3";
 package recyclingservicesproto;
 
 import "google/protobuf/timestamp.proto";
+import "github.com/edstell/lambda/tools/protoc-gen-service/proto/validator.proto";
 
 option go_package = "github.com/edstell/lambda/service.recycling-services/proto;recyclingservicesproto";
 

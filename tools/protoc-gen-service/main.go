@@ -33,6 +33,9 @@ func main() {
 	}
 	files := make([]*plugin.CodeGeneratorResponse_File, 0, len(req.ProtoFile)*len(generators))
 	for _, protoFile := range req.ProtoFile {
+		if len(protoFile.Service) == 0 {
+			continue
+		}
 		for _, generator := range generators {
 			file, err := generator.Generate(protoFile)
 			if err != nil {
