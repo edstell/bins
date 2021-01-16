@@ -5,6 +5,7 @@ import (
 	"context"
 
 	"github.com/edstell/lambda/libraries/rpc"
+	"github.com/edstell/lambda/libraries/validation"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 {{range .Service}}
@@ -33,6 +34,10 @@ func {{.Name|toLower}}(handler func(context.Context, *{{.InputType|rhs}}) (*{{.O
 	return func(ctx context.Context, req rpc.Request) (*rpc.Response, error) {
 		body := &{{.InputType|rhs}}{}
 		if err := protojson.Unmarshal(req.Body, body); err != nil {
+			return nil, err
+		}
+
+		if err := validation.Validate(body); err != nil {
 			return nil, err
 		}
 

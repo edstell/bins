@@ -5,6 +5,7 @@ import (
 	"context"
 
 	"github.com/edstell/lambda/libraries/rpc"
+	"github.com/edstell/lambda/libraries/validation"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -35,6 +36,10 @@ func readproperty(handler func(context.Context, *ReadPropertyRequest) (*ReadProp
 			return nil, err
 		}
 
+		if err := validation.Validate(body); err != nil {
+			return nil, err
+		}
+
 		rsp, err := handler(ctx, body)
 		if err != nil {
 			return nil, err
@@ -58,6 +63,10 @@ func syncproperty(handler func(context.Context, *SyncPropertyRequest) (*SyncProp
 			return nil, err
 		}
 
+		if err := validation.Validate(body); err != nil {
+			return nil, err
+		}
+
 		rsp, err := handler(ctx, body)
 		if err != nil {
 			return nil, err
@@ -78,6 +87,10 @@ func notifyproperty(handler func(context.Context, *NotifyPropertyRequest) (*Noti
 	return func(ctx context.Context, req rpc.Request) (*rpc.Response, error) {
 		body := &NotifyPropertyRequest{}
 		if err := protojson.Unmarshal(req.Body, body); err != nil {
+			return nil, err
+		}
+
+		if err := validation.Validate(body); err != nil {
 			return nil, err
 		}
 
