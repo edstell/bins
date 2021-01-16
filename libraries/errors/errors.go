@@ -3,6 +3,7 @@ package errors
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 type Known interface {
@@ -45,4 +46,8 @@ func BadRequest(reason string) error {
 
 func MissingParam(param string) error {
 	return BadRequest(fmt.Sprintf("missing param: %s", param))
+}
+
+func PrefixMatches(err error, prefix string) bool {
+	return strings.HasPrefix(err.Error(), prefix)
 }
