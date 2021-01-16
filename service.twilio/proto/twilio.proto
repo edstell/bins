@@ -1,0 +1,17 @@
+syntax = "proto3";
+package twilioproto;
+
+import "github.com/edstell/lambda/tools/protoc-gen-service/proto/validation/validation.proto";
+
+option go_package = "github.com/edstell/lambda/service.twilio/proto;twilioproto";
+
+service Twilio {
+    rpc SendSMS (SendSMSRequest) returns (SendSMSResponse);
+}
+
+message SendSMSRequest {
+    string phone_number = 1 [(validation.required) = true];
+    string message = 2 [(validation.required) = true];
+}
+
+message SendSMSResponse {}

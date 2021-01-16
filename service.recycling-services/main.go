@@ -13,7 +13,7 @@ import (
 	"github.com/edstell/lambda/service.recycling-services/handler"
 	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
 	"github.com/edstell/lambda/service.recycling-services/store"
-	twilio "github.com/edstell/lambda/service.twilio/rpc"
+	twilioproto "github.com/edstell/lambda/service.twilio/proto"
 )
 
 func timeNowUTC() time.Time {
@@ -31,7 +31,7 @@ func main() {
 	lambdaService := svc.New(sess)
 	// Instrument the lambda client.
 	xray.AWS(lambdaService.Client)
-	client := twilio.NewClient(lambdaService, os.Getenv("TWILIO_ARN"))
+	client := twilioproto.NewClient(lambdaService, os.Getenv("TWILIO_ARN"))
 	handler := handler.New(store, client, timeNowUTC)
 	router := recyclingservicesproto.NewRouter(handler)
 	lambda.Start(router.Handler)

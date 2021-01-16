@@ -3,7 +3,7 @@ package notifier
 import (
 	"context"
 
-	twilio "github.com/edstell/lambda/service.twilio/rpc"
+	twilioproto "github.com/edstell/lambda/service.twilio/proto"
 )
 
 type Notifier interface {
@@ -16,15 +16,15 @@ func (f NotifierFunc) Notify(ctx context.Context, message Message) error {
 	return f(ctx, message)
 }
 
-func SMS(client *twilio.Client, phoneNumber string) Notifier {
+func SMS(twilio *twilioproto.Client, phoneNumber string) Notifier {
 	return NotifierFunc(func(ctx context.Context, message Message) error {
 		body, err := message.Format()
 		if err != nil {
 			return err
 		}
-		if _, err := client.SendSMS(ctx, twilio.SendSMSRequest{
-			To:      phoneNumber,
-			Message: body,
+		if _, err := twilio.SendSMS(ctx, &twilioproto.SendSMSRequest{
+			PhoneNumber: phoneNumber,
+			Message:     body,
 		}); err != nil {
 			return err
 		}

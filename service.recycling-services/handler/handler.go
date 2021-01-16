@@ -11,18 +11,18 @@ import (
 	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
 	"github.com/edstell/lambda/service.recycling-services/services"
 	"github.com/edstell/lambda/service.recycling-services/store"
-	twilio "github.com/edstell/lambda/service.twilio/rpc"
+	twilioproto "github.com/edstell/lambda/service.twilio/proto"
 )
 
 type handler struct {
 	store           store.Store
-	client          *twilio.Client
+	client          *twilioproto.Client
 	fetcher         services.Fetcher
 	timeNow         func() time.Time
 	propertyMessage func(string, domain.Property) (notifier.Message, error)
 }
 
-func New(store store.Store, client *twilio.Client, timeNow func() time.Time) recyclingservicesproto.Handler {
+func New(store store.Store, client *twilioproto.Client, timeNow func() time.Time) recyclingservicesproto.Handler {
 	return &handler{
 		store:  store,
 		client: client,
