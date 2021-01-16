@@ -20,5 +20,5 @@ files=$(find $ROOT -maxdepth 3 -type f -name "*.proto")
 for f in $files; do
 	out=$(dirname "$f")
 	echo "Compiling $f";
-	protoc --proto_path=$GOPATH/src --go_out=paths=source_relative:./ $f;
+	protoc --proto_path=$GOPATH/src --go_out=$GOPATH/src $f;
 done
