@@ -28,7 +28,7 @@ message Message {
 message OneOf {
     oneof field {
         string value = 1;
-        option (validation.must_exist) = true;
+        option (validation.at_least_one) = true;
     }
 }
 

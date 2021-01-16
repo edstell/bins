@@ -10,5 +10,5 @@ extend google.protobuf.FieldOptions {
 }
 
 extend google.protobuf.OneofOptions {
-    bool must_exist = 50000;
+    bool at_least_one = 50000;
 }

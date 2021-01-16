@@ -72,7 +72,7 @@ func validate(k protoreflect.Kind, v protoreflect.Value) error {
 func isRequired(fd protoreflect.FieldDescriptor) bool {
 	if oneof := fd.ContainingOneof(); oneof != nil {
 		opts := oneof.Options().(*descriptorpb.OneofOptions)
-		isRequired, _ := proto.GetExtension(opts, validationproto.E_MustExist).(bool)
+		isRequired, _ := proto.GetExtension(opts, validationproto.E_AtLeastOne).(bool)
 		return isRequired
 	}
 	opts := fd.Options().(*descriptorpb.FieldOptions)
