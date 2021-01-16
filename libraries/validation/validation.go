@@ -1,8 +1,6 @@
 package validation
 
 import (
-	"reflect"
-
 	"github.com/edstell/lambda/libraries/errors"
 	validationproto "github.com/edstell/lambda/tools/protoc-gen-service/proto/validation"
 	"google.golang.org/protobuf/proto"
@@ -21,20 +19,31 @@ func validateMessage(m protoreflect.Message) error {
 	fields := m.Descriptor().Fields()
 	for i := 0; i < fields.Len(); i++ {
 		fd := fields.Get(i)
+		v := m.Get(fd)
 		if isRequired(fd) && !m.Has(fd) {
 			return errors.MissingParam(name(fd))
 		}
-		if err := validate(fd, m.Get(fd)); err != nil {
-			return err
+		if fd.IsMap() {
+			if err := validateMap(fd.MapValue().Kind(), v); err != nil {
+				return err
+			}
+		} else if fd.IsList() {
+			if err := validateList(fd.Kind(), v); err != nil {
+				return err
+			}
+		} else {
+			if err := validate(fd.Kind(), v); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
 }
 
-func validateMap(fd protoreflect.FieldDescriptor, v protoreflect.Value) error {
+func validateMap(k protoreflect.Kind, v protoreflect.Value) error {
 	var err error
-	v.Map().Range(func(k protoreflect.MapKey, v protoreflect.Value) bool {
-		if err = validate(fd.MapValue(), v); err != nil {
+	v.Map().Range(func(_ protoreflect.MapKey, v protoreflect.Value) bool {
+		if err = validate(k, v); err != nil {
 			return false
 		}
 		return true
@@ -42,33 +51,22 @@ func validateMap(fd protoreflect.FieldDescriptor, v protoreflect.Value) error {
 	return err
 }
 
-func validateList(fd protoreflect.FieldDescriptor, v protoreflect.Value) error {
+func validateList(k protoreflect.Kind, v protoreflect.Value) error {
 	list := v.List()
 	for i := 0; i < list.Len(); i++ {
-		if err := validate(nil, list.Get(i)); err != nil {
+		if err := validate(k, list.Get(i)); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func validate(fd protoreflect.FieldDescriptor, v protoreflect.Value) error {
-	var err error
-	switch fd.Kind() {
-	case protoreflect.MessageKind:
-		if fd.IsMap() {
-			err = validateMap(fd, v)
-		} else if fd.IsList() {
-			err = validateList(fd, v)
-		} else {
-			err = validateMessage(v.Message())
-		}
-	default:
-		if isRequired(fd) && !isPresent(fd, v) {
-			return errors.MissingParam(name(fd))
-		}
+func validate(k protoreflect.Kind, v protoreflect.Value) error {
+	if k == protoreflect.MessageKind {
+		return validateMessage(v.Message())
 	}
-	return err
+	// TODO once more validation options are added, they'll be checked here.
+	return nil
 }
 
 func isRequired(fd protoreflect.FieldDescriptor) bool {
@@ -90,16 +88,4 @@ func name(fd protoreflect.FieldDescriptor) string {
 		return string(oneof.Name())
 	}
 	return fd.TextName()
-}
-
-func isPresent(fd protoreflect.FieldDescriptor, v protoreflect.Value) bool {
-	val := v.Interface()
-	typ := reflect.TypeOf(val)
-	if !typ.Comparable() {
-		panic("complex type encountered")
-	}
-	if reflect.Zero(typ) == reflect.ValueOf(val) {
-		return false
-	}
-	return true
 }

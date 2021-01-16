@@ -56,3 +56,35 @@ func TestMissingOneof(t *testing.T) {
 	require.Error(t, err)
 	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
 }
+
+func TestMissingFieldInMapValue(t *testing.T) {
+	t.Parallel()
+	msg := &MapMessage{
+		Map: map[string]*Message{
+			"value": {},
+		},
+	}
+	err := Validate(msg)
+	require.Error(t, err)
+	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
+}
+
+func TestMissingFieldInListValue(t *testing.T) {
+	t.Parallel()
+	msg := &ListMessage{
+		List: []*Message{{}},
+	}
+	err := Validate(msg)
+	require.Error(t, err)
+	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
+}
+
+func TestMissingFieldInMessageValue(t *testing.T) {
+	t.Parallel()
+	msg := &MessageMessage{
+		Msg: &Message{},
+	}
+	err := Validate(msg)
+	require.Error(t, err)
+	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
+}

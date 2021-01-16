@@ -31,3 +31,15 @@ message OneOf {
         option (validation.must_exist) = true;
     }
 }
+
+message MapMessage {
+    map<string,Message> map = 1;
+}
+
+message ListMessage {
+    repeated Message list = 1;
+}
+
+message MessageMessage {
+    Message msg = 1; 
+}
