@@ -26,9 +26,8 @@ func New(store store.Store, client *twilio.Client, timeNow func() time.Time) rec
 	return &handler{
 		store:  store,
 		client: client,
-		fetcher: services.WebScraper(&http.Client{
-			Timeout: time.Second * 30,
-		},
+		fetcher: services.WebScraper(
+			&http.Client{Timeout: time.Second * 30},
 			services.ParseHTML,
 			"https://recyclingservicesproto.bromley.gov.uk/property",
 		),
