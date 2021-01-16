@@ -27,7 +27,7 @@ message Property {
 }
 
 message ReadPropertyRequest {
-    string property_id = 1;
+    string property_id = 1 [(validator.validation) = "required"];
 }
 
 message ReadPropertyResponse {
@@ -35,7 +35,7 @@ message ReadPropertyResponse {
 }
 
 message SyncPropertyRequest {
-    string property_id = 1;
+    string property_id = 1 [(validator.validation) = "required"];
 }
 
 message SyncPropertyResponse {
@@ -47,14 +47,15 @@ message Notifier {
         SMS sms = 1;
     }
     message SMS {
-        string phone_number = 1;
+        string phone_number = 1 [(validator.validation) = "required"];
     }
 }
 
 message NotifyPropertyRequest {
-    string property_id = 1;
-    string message_name = 2;
-    Notifier notifier = 3;
+    string property_id = 1 [(validator.validation) = "required"];
+    string message_name = 2 [(validator.validation) = "required"];
+    Notifier notifier = 3 [(validator.validation) = "required"];
 }
 
 message NotifyPropertyResponse {}
+
