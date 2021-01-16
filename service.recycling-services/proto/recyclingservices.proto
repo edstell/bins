@@ -42,19 +42,15 @@ message SyncPropertyResponse {
     Property property = 1;
 }
 
-message Notifier {
+message NotifyPropertyRequest {
+    string property_id = 1 [(validator.validation) = "required"];
+    string message_name = 2 [(validator.validation) = "required"];
     oneof notifier {
-        SMS sms = 1;
+        SMS sms = 3;
     }
     message SMS {
         string phone_number = 1 [(validator.validation) = "required"];
     }
-}
-
-message NotifyPropertyRequest {
-    string property_id = 1 [(validator.validation) = "required"];
-    string message_name = 2 [(validator.validation) = "required"];
-    Notifier notifier = 3 [(validator.validation) = "required"];
 }
 
 message NotifyPropertyResponse {}
