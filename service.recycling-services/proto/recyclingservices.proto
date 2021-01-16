@@ -4,7 +4,7 @@ package recyclingservicesproto;
 import "google/protobuf/timestamp.proto";
 import "github.com/edstell/lambda/tools/protoc-gen-service/proto/validator/validator.proto";
 
-option go_package = "github.com/edstell/lambda/service.recycling-services/proto/recyclingservicesproto";
+option go_package = "github.com/edstell/lambda/service.recycling-services/proto";
 
 service RecyclingServices {
     rpc ReadProperty (ReadPropertyRequest) returns (ReadPropertyResponse);
