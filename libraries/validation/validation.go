@@ -92,5 +92,5 @@ func name(fd protoreflect.FieldDescriptor) string {
 	if oneof := fd.ContainingOneof(); oneof != nil {
 		return string(oneof.Name())
 	}
-	return fd.TextName()
+	return string(fd.Name())
 }

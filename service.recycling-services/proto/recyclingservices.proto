@@ -26,6 +26,16 @@ message Property {
     google.protobuf.Timestamp updated_at = 3;
 }
 
+message Notifier {
+    oneof notifier {
+        SMS sms = 3;
+        option (validation.at_least_one) = true;
+    }
+    message SMS {
+        string phone_number = 1 [(validation.required) = true];
+    }
+}
+
 message ReadPropertyRequest {
     string property_id = 1 [(validation.required) = true];
 }
@@ -45,13 +55,7 @@ message SyncPropertyResponse {
 message NotifyPropertyRequest {
     string property_id = 1 [(validation.required) = true];
     string message_name = 2 [(validation.required) = true];
-    oneof notifier {
-        SMS sms = 3;
-        option (validation.at_least_one) = true;
-    }
-    message SMS {
-        string phone_number = 1 [(validation.required) = true];
-    }
+    Notifier notifier = 3 [(validation.required) = true];
 }
 
 message NotifyPropertyResponse {}

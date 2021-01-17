@@ -31,8 +31,8 @@ func main() {
 	lambdaService := svc.New(sess)
 	// Instrument the lambda client.
 	xray.AWS(lambdaService.Client)
-	client := twilioproto.NewClient(lambdaService, os.Getenv("TWILIO_ARN"))
-	handler := handler.New(store, client, timeNowUTC)
+	twilio := twilioproto.NewClient(lambdaService, os.Getenv("TWILIO_ARN"))
+	handler := handler.New(store, twilio, timeNowUTC)
 	router := recyclingservicesproto.NewRouter(handler)
 	lambda.Start(router.Handler)
 }
