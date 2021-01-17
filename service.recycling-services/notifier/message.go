@@ -23,16 +23,16 @@ func (ss Services) Filter(pred func(domain.Service) bool) Services {
 }
 
 type Message interface {
-	Format() (string, error)
+	Raw() ([]byte, error)
 }
 
-type MessageFunc func() (string, error)
+type MessageFunc func() ([]byte, error)
 
-func (f MessageFunc) Format() (string, error) {
+func (f MessageFunc) Raw() ([]byte, error) {
 	return f()
 }
 
-func ServicesTomorrow(timeNow func() time.Time) func(domain.Property) Message {
+func ServicesTomorrow(timeNow func() time.Time) func(domain.Property) (Message, error) {
 	t, err := template.New("ServicesTomorrow").Funcs(map[string]interface{}{
 		"tomorrow": func() string {
 			return formatDate(timeNow().Add(time.Hour * 24))
@@ -42,18 +42,18 @@ func ServicesTomorrow(timeNow func() time.Time) func(domain.Property) Message {
 	if err != nil {
 		panic(err)
 	}
-	return func(property domain.Property) Message {
-		return MessageFunc(func() (string, error) {
+	return func(property domain.Property) (Message, error) {
+		return MessageFunc(func() ([]byte, error) {
 			var out bytes.Buffer
 			if err := t.Execute(&out, property); err != nil {
-				return "", err
+				return nil, err
 			}
-			return out.String(), nil
-		})
+			return out.Bytes(), nil
+		}), nil
 	}
 }
 
-func ServicesNextWeek(timeNow func() time.Time) func(domain.Property) Message {
+func ServicesNextWeek(timeNow func() time.Time) func(domain.Property) (Message, error) {
 	now := timeNow()
 	start := time.Date(now.Year(), now.Month(), now.Day()+int(7-now.Weekday()), 0, 0, 0, 0, time.UTC)
 	end := start.Add(7 * 24 * time.Hour)
@@ -74,7 +74,7 @@ func ServicesNextWeek(timeNow func() time.Time) func(domain.Property) Message {
 	type input struct {
 		Collections map[time.Weekday][]domain.Service
 	}
-	return func(property domain.Property) Message {
+	return func(property domain.Property) (Message, error) {
 		collections := map[time.Weekday][]domain.Service{}
 		for _, service := range Services(property.Services).Filter(inRange) {
 			services, ok := collections[service.NextService.Weekday()]
@@ -87,20 +87,20 @@ func ServicesNextWeek(timeNow func() time.Time) func(domain.Property) Message {
 		err := t.Execute(&out, input{
 			Collections: collections,
 		})
-		return MessageFunc(func() (string, error) {
+		return MessageFunc(func() ([]byte, error) {
 			if err != nil {
-				return "", err
+				return nil, err
 			}
-			return out.String(), nil
-		})
+			return out.Bytes(), nil
+		}), nil
 	}
 }
 
-func DescribeProperty() func(domain.Property) Message {
-	return func(property domain.Property) Message {
-		return MessageFunc(func() (string, error) {
-			return "", nil
-		})
+func DescribeProperty() func(domain.Property) (Message, error) {
+	return func(property domain.Property) (Message, error) {
+		return MessageFunc(func() ([]byte, error) {
+			return nil, nil
+		}), nil
 	}
 }
 

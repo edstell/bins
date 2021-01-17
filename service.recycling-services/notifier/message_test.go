@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFormatDate(t *testing.T) {
+func TestRawDate(t *testing.T) {
 	t.Parallel()
 	assert.Equal(t, formatDate(time.Date(2021, 1, 9, 0, 0, 0, 0, time.UTC)), "Sat 9th")
 }
@@ -32,7 +32,7 @@ func TestToList(t *testing.T) {
 func TestServicesTomorrow(t *testing.T) {
 	t.Parallel()
 	friEigth := time.Date(2021, 1, 8, 0, 0, 0, 0, time.UTC)
-	result, err := ServicesTomorrow(func() time.Time { return friEigth })(domain.Property{
+	message, err := ServicesTomorrow(func() time.Time { return friEigth })(domain.Property{
 		Services: []domain.Service{
 			{
 				Name: "General waste",
@@ -44,15 +44,17 @@ func TestServicesTomorrow(t *testing.T) {
 				Name: "Cardboard",
 			},
 		},
-	}).Format()
+	})
 	require.NoError(t, err)
-	assert.Equal(t, "Hey! You've got a collection tomorrow (Sat 9th); don't forget to take your 'general waste', 'plastic and tins' and 'cardboard' bins out.", result)
+	result, err := message.Raw()
+	require.NoError(t, err)
+	assert.Equal(t, "Hey! You've got a collection tomorrow (Sat 9th); don't forget to take your 'general waste', 'plastic and tins' and 'cardboard' bins out.", string(result))
 }
 
 func TestServicesNextWeek(t *testing.T) {
 	t.Parallel()
 	satNinth := time.Date(2021, 1, 9, 0, 0, 0, 0, time.UTC)
-	result, err := ServicesNextWeek(func() time.Time { return satNinth })(domain.Property{
+	message, err := ServicesNextWeek(func() time.Time { return satNinth })(domain.Property{
 		Services: []domain.Service{
 			{
 				Name:        "General waste",
@@ -67,7 +69,9 @@ func TestServicesNextWeek(t *testing.T) {
 				NextService: time.Date(satNinth.Year(), satNinth.Month(), satNinth.Day()+3, 0, 0, 0, 0, time.UTC),
 			},
 		},
-	}).Format()
+	})
 	require.NoError(t, err)
-	assert.Equal(t, "Hey! You have 2 collection[s] next week (w/c Sun 10th): 'general waste' and 'plastic and tins' bins on Monday and 'cardboard' bin on Tuesday.", result)
+	result, err := message.Raw()
+	require.NoError(t, err)
+	assert.Equal(t, "Hey! You have 2 collection[s] next week (w/c Sun 10th): 'general waste' and 'plastic and tins' bins on Monday and 'cardboard' bin on Tuesday.", string(result))
 }

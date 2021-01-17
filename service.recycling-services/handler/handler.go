@@ -16,24 +16,24 @@ import (
 )
 
 type handler struct {
-	store           store.Store
-	client          *twilioproto.Client
-	fetcher         services.Fetcher
-	timeNow         func() time.Time
-	propertyMessage func(string, domain.Property) (notifier.Message, error)
+	store             store.Store
+	fetcher           services.Fetcher
+	timeNow           func() time.Time
+	propertyMessage   func(string, domain.Property) (notifier.Message, error)
+	notifierFromProto func(*recyclingservicesproto.Notifier) notifier.Notifier
 }
 
-func New(store store.Store, client *twilioproto.Client, timeNow func() time.Time) recyclingservicesproto.Handler {
+func New(store store.Store, twilio *twilioproto.Client, timeNow func() time.Time) recyclingservicesproto.Handler {
 	return &handler{
-		store:  store,
-		client: client,
+		store: store,
 		fetcher: services.WebScraper(
 			&http.Client{Timeout: time.Second * 30},
 			services.ParseHTML,
 			"https://recyclingservicesproto.bromley.gov.uk/property",
 		),
-		timeNow:         timeNow,
-		propertyMessage: propertyMessageFunc(timeNow),
+		timeNow:           timeNow,
+		propertyMessage:   propertyMessageFunc(timeNow),
+		notifierFromProto: notifier.FromProtoFunc(twilio),
 	}
 }
 
@@ -65,21 +65,18 @@ func (h *handler) SyncProperty(ctx context.Context, body *recyclingservicesproto
 }
 
 func (h *handler) NotifyProperty(ctx context.Context, body *recyclingservicesproto.NotifyPropertyRequest) (*recyclingservicesproto.NotifyPropertyResponse, error) {
-	_, err := h.store.ReadProperty(ctx, body.PropertyId)
+	property, err := h.store.ReadProperty(ctx, body.PropertyId)
 	if err != nil {
 		return nil, err
 	}
-
-	// message, err := h.propertyMessage(body.Message, *property)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// sms := notifier.SMS(h.client, body.PhoneNumber)
-	// if err := sms.Notify(ctx, message); err != nil {
-	// 	return nil, err
-	// }
-
+	notifier := h.notifierFromProto(body.Notifier)
+	message, err := h.propertyMessage(body.MessageName, *property)
+	if err != nil {
+		return nil, err
+	}
+	if err := notifier.Notify(ctx, message); err != nil {
+		return nil, err
+	}
 	return &recyclingservicesproto.NotifyPropertyResponse{}, nil
 }
 
@@ -90,11 +87,11 @@ func propertyMessageFunc(timeNow func() time.Time) func(string, domain.Property)
 	return func(typ string, property domain.Property) (notifier.Message, error) {
 		switch typ {
 		case recyclingservicesproto.MessageServicesTomorrow:
-			return servicesTomorrow(property), nil
+			return servicesTomorrow(property)
 		case recyclingservicesproto.MessageServicesNextWeek:
-			return servicesNextWeek(property), nil
+			return servicesNextWeek(property)
 		case recyclingservicesproto.MessageDescribeProperty:
-			return describeProperty(property), nil
+			return describeProperty(property)
 		default:
 			return nil, status.Error(codes.InvalidArgument, "")
 		}
