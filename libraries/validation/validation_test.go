@@ -88,3 +88,10 @@ func TestMissingFieldInMessageValue(t *testing.T) {
 	require.Error(t, err)
 	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
 }
+
+func TestMissingNestedRequiredField(t *testing.T) {
+	t.Parallel()
+	msg := &MessageMessage{}
+	err := Validate(msg)
+	require.NoError(t, err)
+}

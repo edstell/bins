@@ -20,8 +20,13 @@ func validateMessage(m protoreflect.Message) error {
 	for i := 0; i < fields.Len(); i++ {
 		fd := fields.Get(i)
 		v := m.Get(fd)
-		if isRequired(fd) && !m.Has(fd) {
+		required := isRequired(fd)
+		present := m.Has(fd)
+		if required && !present {
 			return errors.MissingParam(name(fd))
+		}
+		if !required && !present {
+			return nil
 		}
 		if fd.IsMap() {
 			if err := validateMap(fd.MapValue().Kind(), v); err != nil {
