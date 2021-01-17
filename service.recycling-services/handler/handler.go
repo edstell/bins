@@ -29,7 +29,7 @@ func New(store store.Store, twilio *twilioproto.Client, timeNow func() time.Time
 		fetcher: services.WebScraper(
 			&http.Client{Timeout: time.Second * 30},
 			services.ParseHTML,
-			"https://recyclingservicesproto.bromley.gov.uk/property",
+			"https://recyclingservices.bromley.gov.uk/property",
 		),
 		timeNow:           timeNow,
 		propertyMessage:   propertyMessageFunc(timeNow),

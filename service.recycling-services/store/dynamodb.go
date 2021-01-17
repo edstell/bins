@@ -25,7 +25,7 @@ func NewDynamoDB(db dynamodbiface.DynamoDBAPI, timeNow func() time.Time) *Dynamo
 	return &DynamoDB{
 		db:                db,
 		timeNow:           timeNow,
-		propertyTableName: "recyclingservicesprotoProperty",
+		propertyTableName: "RecyclingServicesProperty",
 	}
 }
 

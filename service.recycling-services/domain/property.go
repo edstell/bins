@@ -17,6 +17,7 @@ func (p Property) ToProto() *recyclingservicesproto.Property {
 	return &recyclingservicesproto.Property{
 		Id:        p.ID,
 		UpdatedAt: timestamppb.New(p.UpdatedAt),
+		Services:  Services(p.Services).ToProto(),
 	}
 }
 
