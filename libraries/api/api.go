@@ -3,11 +3,11 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/edstell/lambda/libraries/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Request events.APIGatewayProxyRequest
@@ -40,11 +40,11 @@ func (r *Router) Route(method, resource string, handler Handler) {
 func (r *Router) Handler(ctx context.Context, req Request) (*Response, error) {
 	route, ok := r.routes[req.Resource]
 	if !ok {
-		return failed(errors.NewKnown(http.StatusBadRequest, fmt.Sprintf("invalid resource: %s", req.Resource)))
+		return failed(status.Errorf(codes.PermissionDenied, "resource (%s) unavailable: %s", req.Resource))
 	}
 	handler, ok := route[req.HTTPMethod]
 	if !ok {
-		return failed(errors.NewKnown(http.StatusMethodNotAllowed, "unsupported method for resource"))
+		return failed(status.Errorf(codes.PermissionDenied, "method (%s) unavailable for resource", req.HTTPMethod))
 	}
 	rsp, err := handler(ctx, req)
 	if err != nil {
@@ -62,12 +62,13 @@ func failed(err error) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	statusCode := http.StatusInternalServerError
-	if k, ok := err.(errors.Known); ok {
-		statusCode = k.StatusCode()
+	httpStatus := http.StatusInternalServerError
+	st, ok := status.FromError(err)
+	if ok {
+		httpStatus = HTTPStatusFromCode(st.Code())
 	}
 	return &Response{
-		StatusCode: statusCode,
+		StatusCode: httpStatus,
 		Body:       string(message),
 	}, nil
 }
@@ -85,4 +86,46 @@ func OK(body interface{}) (*Response, error) {
 		StatusCode: http.StatusOK,
 		Body:       rsp,
 	}, nil
+}
+
+// NOTE: Copied from https://github.com/grpc-ecosystem/grpc-gateway/blob/master/runtime/errors.go
+func HTTPStatusFromCode(code codes.Code) int {
+	switch code {
+	case codes.OK:
+		return http.StatusOK
+	case codes.Canceled:
+		return http.StatusRequestTimeout
+	case codes.Unknown:
+		return http.StatusInternalServerError
+	case codes.InvalidArgument:
+		return http.StatusBadRequest
+	case codes.DeadlineExceeded:
+		return http.StatusGatewayTimeout
+	case codes.NotFound:
+		return http.StatusNotFound
+	case codes.AlreadyExists:
+		return http.StatusConflict
+	case codes.PermissionDenied:
+		return http.StatusForbidden
+	case codes.Unauthenticated:
+		return http.StatusUnauthorized
+	case codes.ResourceExhausted:
+		return http.StatusTooManyRequests
+	case codes.FailedPrecondition:
+		// Note, this deliberately doesn't translate to the similarly named '412 Precondition Failed' HTTP response status.
+		return http.StatusBadRequest
+	case codes.Aborted:
+		return http.StatusConflict
+	case codes.OutOfRange:
+		return http.StatusBadRequest
+	case codes.Unimplemented:
+		return http.StatusNotImplemented
+	case codes.Internal:
+		return http.StatusInternalServerError
+	case codes.Unavailable:
+		return http.StatusServiceUnavailable
+	case codes.DataLoss:
+		return http.StatusInternalServerError
+	}
+	return http.StatusInternalServerError
 }

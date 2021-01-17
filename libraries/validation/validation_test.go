@@ -1,12 +1,12 @@
 package validation
 
 import (
-	"fmt"
 	"testing"
 
-	"github.com/edstell/lambda/libraries/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestMissingString(t *testing.T) {
@@ -14,7 +14,9 @@ func TestMissingString(t *testing.T) {
 	msg := &String{}
 	err := Validate(msg)
 	require.Error(t, err)
-	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
+	st, ok := status.FromError(err)
+	require.True(t, ok)
+	assert.Equal(t, codes.InvalidArgument, st.Code())
 }
 
 func TestMissingMap(t *testing.T) {
@@ -22,7 +24,9 @@ func TestMissingMap(t *testing.T) {
 	msg := &Map{}
 	err := Validate(msg)
 	require.Error(t, err)
-	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
+	st, ok := status.FromError(err)
+	require.True(t, ok)
+	assert.Equal(t, codes.InvalidArgument, st.Code())
 }
 
 func TestMissingList(t *testing.T) {
@@ -30,7 +34,9 @@ func TestMissingList(t *testing.T) {
 	msg := &List{}
 	err := Validate(msg)
 	require.Error(t, err)
-	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
+	st, ok := status.FromError(err)
+	require.True(t, ok)
+	assert.Equal(t, codes.InvalidArgument, st.Code())
 }
 
 func TestMissingBytes(t *testing.T) {
@@ -38,7 +44,9 @@ func TestMissingBytes(t *testing.T) {
 	msg := &Bytes{}
 	err := Validate(msg)
 	require.Error(t, err)
-	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
+	st, ok := status.FromError(err)
+	require.True(t, ok)
+	assert.Equal(t, codes.InvalidArgument, st.Code())
 }
 
 func TestMissingMessage(t *testing.T) {
@@ -46,7 +54,9 @@ func TestMissingMessage(t *testing.T) {
 	msg := &Message{}
 	err := Validate(msg)
 	require.Error(t, err)
-	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
+	st, ok := status.FromError(err)
+	require.True(t, ok)
+	assert.Equal(t, codes.InvalidArgument, st.Code())
 }
 
 func TestMissingOneof(t *testing.T) {
@@ -54,7 +64,9 @@ func TestMissingOneof(t *testing.T) {
 	msg := &OneOf{}
 	err := Validate(msg)
 	require.Error(t, err)
-	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
+	st, ok := status.FromError(err)
+	require.True(t, ok)
+	assert.Equal(t, codes.InvalidArgument, st.Code())
 }
 
 func TestMissingFieldInMapValue(t *testing.T) {
@@ -66,7 +78,9 @@ func TestMissingFieldInMapValue(t *testing.T) {
 	}
 	err := Validate(msg)
 	require.Error(t, err)
-	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
+	st, ok := status.FromError(err)
+	require.True(t, ok)
+	assert.Equal(t, codes.InvalidArgument, st.Code())
 }
 
 func TestMissingFieldInListValue(t *testing.T) {
@@ -76,7 +90,9 @@ func TestMissingFieldInListValue(t *testing.T) {
 	}
 	err := Validate(msg)
 	require.Error(t, err)
-	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
+	st, ok := status.FromError(err)
+	require.True(t, ok)
+	assert.Equal(t, codes.InvalidArgument, st.Code())
 }
 
 func TestMissingFieldInMessageValue(t *testing.T) {
@@ -86,7 +102,9 @@ func TestMissingFieldInMessageValue(t *testing.T) {
 	}
 	err := Validate(msg)
 	require.Error(t, err)
-	assert.True(t, errors.PrefixMatches(err, fmt.Sprintf("bad request: missing param: field")))
+	st, ok := status.FromError(err)
+	require.True(t, ok)
+	assert.Equal(t, codes.InvalidArgument, st.Code())
 }
 
 func TestMissingNestedRequiredField(t *testing.T) {

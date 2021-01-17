@@ -1,8 +1,9 @@
 package validation
 
 import (
-	"github.com/edstell/lambda/libraries/errors"
 	validationproto "github.com/edstell/lambda/tools/protoc-gen-service/proto/validation"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
@@ -23,7 +24,7 @@ func validateMessage(m protoreflect.Message) error {
 		required := isRequired(fd)
 		present := m.Has(fd)
 		if required && !present {
-			return errors.MissingParam(name(fd))
+			return status.Errorf(codes.InvalidArgument, "'%s' missing", name(fd))
 		}
 		if !required && !present {
 			return nil
