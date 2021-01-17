@@ -40,7 +40,7 @@ func (r *Router) Route(method, resource string, handler Handler) {
 func (r *Router) Handler(ctx context.Context, req Request) (*Response, error) {
 	route, ok := r.routes[req.Resource]
 	if !ok {
-		return failed(status.Errorf(codes.PermissionDenied, "resource (%s) unavailable: %s", req.Resource))
+		return failed(status.Errorf(codes.PermissionDenied, "resource (%s) unavailable", req.Resource))
 	}
 	handler, ok := route[req.HTTPMethod]
 	if !ok {
