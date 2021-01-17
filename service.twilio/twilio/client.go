@@ -9,7 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/edstell/lambda/libraries/errors"
+	"github.com/edstell/lambda/libraries/api"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Client struct {
@@ -67,10 +69,10 @@ func WithHTTPClient(httpClient *http.Client) func(*Client) {
 
 func (c *Client) SendSMS(ctx context.Context, params map[string]string) error {
 	if _, ok := params["To"]; !ok {
-		return errors.MissingParam("To")
+		return status.Error(codes.InvalidArgument, "'To' must be provided")
 	}
 	if _, ok := params["Body"]; !ok {
-		return errors.MissingParam("Body")
+		return status.Error(codes.InvalidArgument, "'Body' must be provided")
 	}
 
 	query := url.Values{}
@@ -98,10 +100,11 @@ func (c *Client) SendSMS(ctx context.Context, params map[string]string) error {
 		if err := json.NewDecoder(rsp.Body).Decode(&body); err != nil {
 			return err
 		}
-		if message, ok := body["message"].(string); ok {
-			return errors.NewKnown(rsp.StatusCode, message)
+		message := "failed to send sms with code"
+		if m, ok := body["message"].(string); ok {
+			message = m
 		}
-		return errors.NewKnown(rsp.StatusCode, "failed to send sms with code")
+		return status.Error(api.CodeFromHTTPStatus(rsp.StatusCode), message)
 	}
 
 	return nil

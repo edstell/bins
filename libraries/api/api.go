@@ -129,3 +129,33 @@ func HTTPStatusFromCode(code codes.Code) int {
 	}
 	return http.StatusInternalServerError
 }
+
+func CodeFromHTTPStatus(httpStatus int) codes.Code {
+	switch httpStatus {
+	case http.StatusOK:
+		return codes.OK
+	case http.StatusRequestTimeout:
+		return codes.Canceled
+	case http.StatusBadRequest:
+		return codes.InvalidArgument
+	case http.StatusGatewayTimeout:
+		return codes.DeadlineExceeded
+	case http.StatusNotFound:
+		return codes.NotFound
+	case http.StatusConflict:
+		return codes.AlreadyExists
+	case http.StatusForbidden:
+		return codes.PermissionDenied
+	case http.StatusUnauthorized:
+		return codes.Unauthenticated
+	case http.StatusTooManyRequests:
+		return codes.ResourceExhausted
+	case http.StatusNotImplemented:
+		return codes.Unimplemented
+	case http.StatusInternalServerError:
+		return codes.Internal
+	case http.StatusServiceUnavailable:
+		return codes.Unavailable
+	}
+	return http.StatusInternalServerError
+}

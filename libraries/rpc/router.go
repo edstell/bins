@@ -3,8 +3,9 @@ package rpc
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"fmt"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Request struct {
@@ -34,7 +35,7 @@ func (r *Router) Route(procedureName string, handler Handler) {
 func (r *Router) Handler(ctx context.Context, req request) (*response, error) {
 	handler, ok := r.routes[req.ProcedureName]
 	if !ok {
-		return nil, errors.New(fmt.Sprintf("invalid procedure name: %s", req.ProcedureName))
+		return nil, status.Errorf(codes.PermissionDenied, "unsupported procedure '%s'", req.ProcedureName)
 	}
 	rsp, err := handler(ctx, Request{Body: []byte(req.Body)})
 	if err != nil {

@@ -2,15 +2,15 @@ package store
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
-	"github.com/edstell/lambda/libraries/errors"
 	"github.com/edstell/lambda/service.recycling-services/domain"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type DynamoDB struct {
@@ -44,7 +44,7 @@ func (s *DynamoDB) ReadProperty(ctx context.Context, propertyID string) (*domain
 		return nil, err
 	}
 	if result.Item == nil {
-		return nil, errors.NotFound(fmt.Sprintf("property: %s", propertyID))
+		return nil, status.Errorf(codes.NotFound, "'%s' was not found", propertyID)
 	}
 
 	property := &domain.Property{}

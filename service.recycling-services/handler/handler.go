@@ -5,13 +5,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/edstell/lambda/libraries/errors"
 	"github.com/edstell/lambda/service.recycling-services/domain"
 	"github.com/edstell/lambda/service.recycling-services/notifier"
 	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
 	"github.com/edstell/lambda/service.recycling-services/services"
 	"github.com/edstell/lambda/service.recycling-services/store"
 	twilioproto "github.com/edstell/lambda/service.twilio/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type handler struct {
@@ -52,7 +53,7 @@ func (h *handler) SyncProperty(ctx context.Context, body *recyclingservicesproto
 		return nil, err
 	}
 	if len(services) == 0 {
-		return nil, errors.NewKnown(http.StatusInternalServerError, "failed to fetch any services")
+		return nil, status.Error(codes.Internal, "failed to fetch any services")
 	}
 	property, err := h.store.WriteProperty(ctx, body.PropertyId, services)
 	if err != nil {
@@ -95,7 +96,7 @@ func propertyMessageFunc(timeNow func() time.Time) func(string, domain.Property)
 		case recyclingservicesproto.MessageDescribeProperty:
 			return describeProperty(property), nil
 		default:
-			return nil, errors.BadRequest("bad param: message")
+			return nil, status.Error(codes.InvalidArgument, "")
 		}
 	}
 }
