@@ -9,14 +9,20 @@ import (
 )
 {{- range .Service}}
 
-type Client struct {
+type Client interface {
+	{{- range .Method}}
+	{{.Name}}(context.Context, *{{.InputType|rhs}}) (*{{.OutputType|rhs}}, error)
+	{{- end}}
+}
+
+type client struct {
 	{{- range .Method}}
 	{{.Name|toLower}}   rpc.Invoker
 	{{- end}}
 }
 
-func NewClient(i rpc.LambdaInvoker, arn string) *Client {
-	return &Client{
+func NewClient(i rpc.LambdaInvoker, arn string) Client {
+	return &client{
 		{{- range .Method}}
 		{{.Name|toLower}}:   rpc.Client(i, arn, "{{.Name}}"),
 		{{- end}}
@@ -24,22 +30,19 @@ func NewClient(i rpc.LambdaInvoker, arn string) *Client {
 }
 {{- range .Method}}
 
-func (c *Client) {{.Name}}(ctx context.Context, req *{{.InputType|rhs}}) (*{{.OutputType|rhs}}, error) {
+func (c *client) {{.Name}}(ctx context.Context, req *{{.InputType|rhs}}) (*{{.OutputType|rhs}}, error) {
 	payload, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
-
 	rsp, err := c.{{.Name|toLower}}.Invoke(ctx, payload)
 	if err != nil {
 		return nil, err
 	}
-
 	out := &{{.OutputType|rhs}}{}
 	if err := protojson.Unmarshal(rsp, out); err != nil {
 		return nil, err
 	}
-
 	return out, nil
 }
 {{- end}}

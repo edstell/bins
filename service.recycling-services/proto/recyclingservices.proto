@@ -3,6 +3,7 @@ package recyclingservicesproto;
 
 import "google/protobuf/timestamp.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
+import "github.com/edstell/lambda/service.notifier/proto/notifier.proto";
 
 option go_package = "github.com/edstell/lambda/service.recycling-services/proto;recyclingservicesproto";
 
@@ -26,16 +27,6 @@ message Property {
     google.protobuf.Timestamp updated_at = 3;
 }
 
-message Notifier {
-    oneof notifier {
-        SMS sms = 3;
-        option (validator.oneof) = {required : true};
-    }
-    message SMS {
-        string phone_number = 1 [(validator.field) = {string_not_empty : true}];
-    }
-}
-
 message ReadPropertyRequest {
     string property_id = 1 [(validator.field) = {string_not_empty : true}];
 }
@@ -55,7 +46,7 @@ message SyncPropertyResponse {
 message NotifyPropertyRequest {
     string property_id = 1 [(validator.field) = {string_not_empty : true}];
     string message_type = 2 [(validator.field) = {string_not_empty : true}];
-    Notifier notifier = 3 [(validator.field) = {msg_exists : true}];
+    notifierproto.Notifier notifier = 3 [(validator.field) = {msg_exists : true}];
 }
 
 message NotifyPropertyResponse {}

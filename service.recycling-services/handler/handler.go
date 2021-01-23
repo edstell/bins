@@ -6,25 +6,25 @@ import (
 	"net/http"
 	"time"
 
+	notifierproto "github.com/edstell/lambda/service.notifier/proto"
 	"github.com/edstell/lambda/service.recycling-services/domain"
-	"github.com/edstell/lambda/service.recycling-services/notifier"
+	"github.com/edstell/lambda/service.recycling-services/message"
 	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
 	"github.com/edstell/lambda/service.recycling-services/services"
 	"github.com/edstell/lambda/service.recycling-services/store"
-	twilioproto "github.com/edstell/lambda/service.twilio/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type handler struct {
-	store             store.Store
-	fetcher           services.Fetcher
-	timeNow           func() time.Time
-	propertyMessage   func(string, domain.Property) (notifier.Message, error)
-	notifierFromProto func(*recyclingservicesproto.Notifier) notifier.Notifier
+	store           store.Store
+	fetcher         services.Fetcher
+	timeNow         func() time.Time
+	notifier        notifierproto.Client
+	propertyMessage func(string, domain.Property) (message.Message, error)
 }
 
-func New(store store.Store, twilio *twilioproto.Client, timeNow func() time.Time) recyclingservicesproto.Handler {
+func New(store store.Store, notifier notifierproto.Client, timeNow func() time.Time) recyclingservicesproto.Handler {
 	return &handler{
 		store: store,
 		fetcher: services.WebScraper(
@@ -32,9 +32,9 @@ func New(store store.Store, twilio *twilioproto.Client, timeNow func() time.Time
 			services.ParseHTML,
 			"https://recyclingservices.bromley.gov.uk/property",
 		),
-		timeNow:           timeNow,
-		propertyMessage:   propertyMessageFunc(timeNow),
-		notifierFromProto: notifier.FromProtoFunc(twilio),
+		notifier:        notifier,
+		timeNow:         timeNow,
+		propertyMessage: propertyMessageFunc(timeNow),
 	}
 }
 
@@ -74,29 +74,31 @@ func (h *handler) NotifyProperty(ctx context.Context, body *recyclingservicespro
 	if err != nil {
 		return nil, err
 	}
-	notifier := h.notifierFromProto(body.Notifier)
-	message, err := h.propertyMessage(body.MessageType, *property)
+	msg, err := h.propertyMessage(body.MessageType, *property)
 	if err != nil {
 		return nil, err
 	}
-	if err := notifier.Notify(ctx, message); err != nil {
+	if _, ok := msg.(message.NotSendable); ok {
+		return &recyclingservicesproto.NotifyPropertyResponse{}, nil
+	}
+	if _, err := h.notifier.Notify(ctx, &notifierproto.NotifyRequest{
+		Notifier: body.Notifier,
+		Message:  msg.ToProto(),
+	}); err != nil {
 		return nil, err
 	}
 	return &recyclingservicesproto.NotifyPropertyResponse{}, nil
 }
 
-func propertyMessageFunc(timeNow func() time.Time) func(string, domain.Property) (notifier.Message, error) {
-	servicesTomorrow := notifier.ServicesTomorrow(timeNow)
-	servicesNextWeek := notifier.ServicesNextWeek(timeNow)
-	describeProperty := notifier.DescribeProperty()
-	return func(typ string, property domain.Property) (notifier.Message, error) {
+func propertyMessageFunc(timeNow func() time.Time) func(string, domain.Property) (message.Message, error) {
+	servicesTomorrow := message.ServicesTomorrow(timeNow)
+	servicesNextWeek := message.ServicesNextWeek(timeNow)
+	return func(typ string, property domain.Property) (message.Message, error) {
 		switch typ {
 		case recyclingservicesproto.MessageTypeServicesTomorrow:
 			return servicesTomorrow(property)
 		case recyclingservicesproto.MessageTypeServicesNextWeek:
 			return servicesNextWeek(property)
-		case recyclingservicesproto.MessageTypeDescribeProperty:
-			return describeProperty(property)
 		default:
 			return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("message type '%s' unsupported", typ))
 		}

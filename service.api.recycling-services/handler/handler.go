@@ -7,9 +7,9 @@ import (
 	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
 )
 
-func GETProperty(client *recyclingservicesproto.Client) api.Handler {
+func GETProperty(recyclingServices recyclingservicesproto.Client) api.Handler {
 	return func(ctx context.Context, req api.Request) (*api.Response, error) {
-		rsp, err := client.ReadProperty(ctx, &recyclingservicesproto.ReadPropertyRequest{
+		rsp, err := recyclingServices.ReadProperty(ctx, &recyclingservicesproto.ReadPropertyRequest{
 			PropertyId: req.PathParameters["property"],
 		})
 		if err != nil {
