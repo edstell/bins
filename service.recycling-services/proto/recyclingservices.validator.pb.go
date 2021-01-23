@@ -96,8 +96,8 @@ func (this *NotifyPropertyRequest) Validate() error {
 	if this.PropertyId == "" {
 		return github_com_mwitkow_go_proto_validators.FieldError("PropertyId", fmt.Errorf(`value '%v' must not be an empty string`, this.PropertyId))
 	}
-	if this.MessageName == "" {
-		return github_com_mwitkow_go_proto_validators.FieldError("MessageName", fmt.Errorf(`value '%v' must not be an empty string`, this.MessageName))
+	if this.MessageType == "" {
+		return github_com_mwitkow_go_proto_validators.FieldError("MessageType", fmt.Errorf(`value '%v' must not be an empty string`, this.MessageType))
 	}
 	if nil == this.Notifier {
 		return github_com_mwitkow_go_proto_validators.FieldError("Notifier", fmt.Errorf("message must exist"))

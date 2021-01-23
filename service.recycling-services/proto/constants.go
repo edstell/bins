@@ -1,7 +1,7 @@
 package recyclingservicesproto
 
 const (
-	MessageServicesTomorrow = "services-tomorrow"
-	MessageServicesNextWeek = "services-next-week"
-	MessageDescribeProperty = "describe-property"
+	MessageTypeServicesTomorrow = "services-tomorrow"
+	MessageTypeServicesNextWeek = "services-next-week"
+	MessageTypeDescribeProperty = "describe-property"
 )

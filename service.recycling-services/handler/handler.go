@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -47,6 +48,9 @@ func (h *handler) ReadProperty(ctx context.Context, body *recyclingservicesproto
 	}, nil
 }
 
+// SyncProperty will update the data stored for the property. This requires
+// first fetching the latest property data (with the fetcher), then updating the
+// store with the new content.
 func (h *handler) SyncProperty(ctx context.Context, body *recyclingservicesproto.SyncPropertyRequest) (*recyclingservicesproto.SyncPropertyResponse, error) {
 	services, err := h.fetcher.Fetch(ctx, body.PropertyId)
 	if err != nil {
@@ -64,13 +68,14 @@ func (h *handler) SyncProperty(ctx context.Context, body *recyclingservicesproto
 	}, nil
 }
 
+// NotifyProperty is used to send messages regarding the referenced property.
 func (h *handler) NotifyProperty(ctx context.Context, body *recyclingservicesproto.NotifyPropertyRequest) (*recyclingservicesproto.NotifyPropertyResponse, error) {
 	property, err := h.store.ReadProperty(ctx, body.PropertyId)
 	if err != nil {
 		return nil, err
 	}
 	notifier := h.notifierFromProto(body.Notifier)
-	message, err := h.propertyMessage(body.MessageName, *property)
+	message, err := h.propertyMessage(body.MessageType, *property)
 	if err != nil {
 		return nil, err
 	}
@@ -86,14 +91,14 @@ func propertyMessageFunc(timeNow func() time.Time) func(string, domain.Property)
 	describeProperty := notifier.DescribeProperty()
 	return func(typ string, property domain.Property) (notifier.Message, error) {
 		switch typ {
-		case recyclingservicesproto.MessageServicesTomorrow:
+		case recyclingservicesproto.MessageTypeServicesTomorrow:
 			return servicesTomorrow(property)
-		case recyclingservicesproto.MessageServicesNextWeek:
+		case recyclingservicesproto.MessageTypeServicesNextWeek:
 			return servicesNextWeek(property)
-		case recyclingservicesproto.MessageDescribeProperty:
+		case recyclingservicesproto.MessageTypeDescribeProperty:
 			return describeProperty(property)
 		default:
-			return nil, status.Error(codes.InvalidArgument, "")
+			return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("message type '%s' unsupported", typ))
 		}
 	}
 }
