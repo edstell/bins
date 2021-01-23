@@ -1,0 +1,37 @@
+syntax = "proto3";
+package notifierproto;
+
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+
+option go_package = "github.com/edstell/lambda/service.notifier/proto;notifierproto";
+
+service NotifierSvc {
+    rpc Notify (NotifyRequest) returns (NotifyResponse);
+}
+
+message Notifier {
+    oneof notifier {
+        SMS sms = 3;
+        option (validator.oneof) = {required : true};
+    }
+    message SMS {
+        string phone_number = 1 [(validator.field) = {string_not_empty : true}];
+    }
+}
+
+message Message {
+    oneof message {
+        BodyOnly body_only = 1;
+        option (validator.oneof) = {required : true};
+    }
+    message BodyOnly {
+        string body = 2 [(validator.field) = {string_not_empty : true}];
+    }
+}
+
+message NotifyRequest {
+    Notifier notifier = 1 [(validator.field) = {msg_exists : true}];
+    Message message = 2 [(validator.field) = {msg_exists : true}];
+}
+
+message NotifyResponse {}

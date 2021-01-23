@@ -1,4 +1,4 @@
-package notifier
+package message
 
 import (
 	"testing"
@@ -46,9 +46,7 @@ func TestServicesTomorrow(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	result, err := message.Raw()
-	require.NoError(t, err)
-	assert.Equal(t, "Hey! You've got a collection tomorrow (Sat 9th); don't forget to take your 'general waste', 'plastic and tins' and 'cardboard' bins out.", string(result))
+	assert.Equal(t, "Hey! You've got a collection tomorrow (Sat 9th); don't forget to take your 'general waste', 'plastic and tins' and 'cardboard' bins out.", message.(*BodyOnly).Body)
 }
 
 func TestServicesNextWeek(t *testing.T) {
@@ -71,7 +69,5 @@ func TestServicesNextWeek(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	result, err := message.Raw()
-	require.NoError(t, err)
-	assert.Equal(t, "Hey! You have 2 collection[s] next week (w/c Sun 10th): 'general waste' and 'plastic and tins' bins on Monday and 'cardboard' bin on Tuesday.", string(result))
+	assert.Equal(t, "Hey! You have 2 collection[s] next week (w/c Sun 10th): 'general waste' and 'plastic and tins' bins on Monday and 'cardboard' bin on Tuesday.", message.(*BodyOnly).Body)
 }

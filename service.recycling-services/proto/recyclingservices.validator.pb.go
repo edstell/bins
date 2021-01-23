@@ -9,6 +9,7 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "github.com/mwitkow/go-proto-validators"
+	_ "github.com/edstell/lambda/service.notifier/proto"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -42,25 +43,6 @@ func (this *Property) Validate() error {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
 		}
-	}
-	return nil
-}
-func (this *Notifier) Validate() error {
-	if this.GetNotifier() == nil {
-		return github_com_mwitkow_go_proto_validators.FieldError("Notifier", fmt.Errorf("one of the fields must be set"))
-	}
-	if oneOfNester, ok := this.GetNotifier().(*Notifier_Sms); ok {
-		if oneOfNester.Sms != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.Sms); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Sms", err)
-			}
-		}
-	}
-	return nil
-}
-func (this *Notifier_SMS) Validate() error {
-	if this.PhoneNumber == "" {
-		return github_com_mwitkow_go_proto_validators.FieldError("PhoneNumber", fmt.Errorf(`value '%v' must not be an empty string`, this.PhoneNumber))
 	}
 	return nil
 }

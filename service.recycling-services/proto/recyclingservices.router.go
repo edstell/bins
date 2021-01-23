@@ -40,24 +40,20 @@ func readproperty(handler func(context.Context, *ReadPropertyRequest) (*ReadProp
 		if err := protojson.Unmarshal(req.Body, body); err != nil {
 			return nil, err
 		}
-
 		var b interface{} = body
 		if v, ok := b.(validator); ok {
 			if err := v.Validate(); err != nil {
 				return nil, status.Error(codes.InvalidArgument, err.Error())
 			}
 		}
-
 		rsp, err := handler(ctx, body)
 		if err != nil {
 			return nil, err
 		}
-
 		bytes, err := protojson.Marshal(rsp)
 		if err != nil {
 			return nil, err
 		}
-
 		return &rpc.Response{
 			Body: bytes,
 		}, nil
@@ -70,24 +66,20 @@ func syncproperty(handler func(context.Context, *SyncPropertyRequest) (*SyncProp
 		if err := protojson.Unmarshal(req.Body, body); err != nil {
 			return nil, err
 		}
-
 		var b interface{} = body
 		if v, ok := b.(validator); ok {
 			if err := v.Validate(); err != nil {
 				return nil, status.Error(codes.InvalidArgument, err.Error())
 			}
 		}
-
 		rsp, err := handler(ctx, body)
 		if err != nil {
 			return nil, err
 		}
-
 		bytes, err := protojson.Marshal(rsp)
 		if err != nil {
 			return nil, err
 		}
-
 		return &rpc.Response{
 			Body: bytes,
 		}, nil
@@ -100,24 +92,20 @@ func notifyproperty(handler func(context.Context, *NotifyPropertyRequest) (*Noti
 		if err := protojson.Unmarshal(req.Body, body); err != nil {
 			return nil, err
 		}
-
 		var b interface{} = body
 		if v, ok := b.(validator); ok {
 			if err := v.Validate(); err != nil {
 				return nil, status.Error(codes.InvalidArgument, err.Error())
 			}
 		}
-
 		rsp, err := handler(ctx, body)
 		if err != nil {
 			return nil, err
 		}
-
 		bytes, err := protojson.Marshal(rsp)
 		if err != nil {
 			return nil, err
 		}
-
 		return &rpc.Response{
 			Body: bytes,
 		}, nil

@@ -8,73 +8,70 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-type Client struct {
+type Client interface {
+	ReadProperty(context.Context, *ReadPropertyRequest) (*ReadPropertyResponse, error)
+	SyncProperty(context.Context, *SyncPropertyRequest) (*SyncPropertyResponse, error)
+	NotifyProperty(context.Context, *NotifyPropertyRequest) (*NotifyPropertyResponse, error)
+}
+
+type client struct {
 	readproperty   rpc.Invoker
 	syncproperty   rpc.Invoker
 	notifyproperty   rpc.Invoker
 }
 
-func NewClient(i rpc.LambdaInvoker, arn string) *Client {
-	return &Client{
+func NewClient(i rpc.LambdaInvoker, arn string) Client {
+	return &client{
 		readproperty:   rpc.Client(i, arn, "ReadProperty"),
 		syncproperty:   rpc.Client(i, arn, "SyncProperty"),
 		notifyproperty:   rpc.Client(i, arn, "NotifyProperty"),
 	}
 }
 
-func (c *Client) ReadProperty(ctx context.Context, req *ReadPropertyRequest) (*ReadPropertyResponse, error) {
+func (c *client) ReadProperty(ctx context.Context, req *ReadPropertyRequest) (*ReadPropertyResponse, error) {
 	payload, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
-
 	rsp, err := c.readproperty.Invoke(ctx, payload)
 	if err != nil {
 		return nil, err
 	}
-
 	out := &ReadPropertyResponse{}
 	if err := protojson.Unmarshal(rsp, out); err != nil {
 		return nil, err
 	}
-
 	return out, nil
 }
 
-func (c *Client) SyncProperty(ctx context.Context, req *SyncPropertyRequest) (*SyncPropertyResponse, error) {
+func (c *client) SyncProperty(ctx context.Context, req *SyncPropertyRequest) (*SyncPropertyResponse, error) {
 	payload, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
-
 	rsp, err := c.syncproperty.Invoke(ctx, payload)
 	if err != nil {
 		return nil, err
 	}
-
 	out := &SyncPropertyResponse{}
 	if err := protojson.Unmarshal(rsp, out); err != nil {
 		return nil, err
 	}
-
 	return out, nil
 }
 
-func (c *Client) NotifyProperty(ctx context.Context, req *NotifyPropertyRequest) (*NotifyPropertyResponse, error) {
+func (c *client) NotifyProperty(ctx context.Context, req *NotifyPropertyRequest) (*NotifyPropertyResponse, error) {
 	payload, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
-
 	rsp, err := c.notifyproperty.Invoke(ctx, payload)
 	if err != nil {
 		return nil, err
 	}
-
 	out := &NotifyPropertyResponse{}
 	if err := protojson.Unmarshal(rsp, out); err != nil {
 		return nil, err
 	}
-
 	return out, nil
 }
