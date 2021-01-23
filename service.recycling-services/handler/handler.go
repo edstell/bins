@@ -93,15 +93,12 @@ func (h *handler) NotifyProperty(ctx context.Context, body *recyclingservicespro
 func propertyMessageFunc(timeNow func() time.Time) func(string, domain.Property) (message.Message, error) {
 	servicesTomorrow := message.ServicesTomorrow(timeNow)
 	servicesNextWeek := message.ServicesNextWeek(timeNow)
-	describeProperty := message.DescribeProperty()
 	return func(typ string, property domain.Property) (message.Message, error) {
 		switch typ {
 		case recyclingservicesproto.MessageTypeServicesTomorrow:
 			return servicesTomorrow(property)
 		case recyclingservicesproto.MessageTypeServicesNextWeek:
 			return servicesNextWeek(property)
-		case recyclingservicesproto.MessageTypeDescribeProperty:
-			return describeProperty(property)
 		default:
 			return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("message type '%s' unsupported", typ))
 		}
