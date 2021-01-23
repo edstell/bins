@@ -19,5 +19,5 @@ fi
 files=$(find $ROOT -maxdepth 3 -type f -name "*.proto")
 for f in $files; do
 	echo "Compiling $f";
-	protoc -I=$(dirname $f) --proto_path=$GOPATH/src --go_out=$GOPATH/src --service_out=$(dirname $f) $f;
+	protoc -I=$(dirname $f) --proto_path=$GOPATH/src --go_out=$GOPATH/src --service_out=$(dirname $f) --govalidators_out=$GOPATH/src $f;
 done

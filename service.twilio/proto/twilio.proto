@@ -1,7 +1,7 @@
 syntax = "proto3";
 package twilioproto;
 
-import "github.com/edstell/lambda/tools/protoc-gen-service/proto/validation/validation.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 option go_package = "github.com/edstell/lambda/service.twilio/proto;twilioproto";
 
@@ -10,8 +10,8 @@ service Twilio {
 }
 
 message SendSMSRequest {
-    string phone_number = 1 [(validation.required) = true];
-    string message = 2 [(validation.required) = true];
+    string phone_number = 1 [(validator.field) = {string_not_empty : true}];
+    string message = 2 [(validator.field) = {string_not_empty : true}];
 }
 
 message SendSMSResponse {}

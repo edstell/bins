@@ -2,7 +2,7 @@ syntax = "proto3";
 package recyclingservicesproto;
 
 import "google/protobuf/timestamp.proto";
-import "github.com/edstell/lambda/tools/protoc-gen-service/proto/validation/validation.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 option go_package = "github.com/edstell/lambda/service.recycling-services/proto;recyclingservicesproto";
 
@@ -29,15 +29,15 @@ message Property {
 message Notifier {
     oneof notifier {
         SMS sms = 3;
-        option (validation.at_least_one) = true;
+        option (validator.oneof) = {required : true};
     }
     message SMS {
-        string phone_number = 1 [(validation.required) = true];
+        string phone_number = 1 [(validator.field) = {string_not_empty : true}];
     }
 }
 
 message ReadPropertyRequest {
-    string property_id = 1 [(validation.required) = true];
+    string property_id = 1 [(validator.field) = {string_not_empty : true}];
 }
 
 message ReadPropertyResponse {
@@ -45,7 +45,7 @@ message ReadPropertyResponse {
 }
 
 message SyncPropertyRequest {
-    string property_id = 1 [(validation.required) = true];
+    string property_id = 1 [(validator.field) = {string_not_empty : true}];
 }
 
 message SyncPropertyResponse {
@@ -53,9 +53,9 @@ message SyncPropertyResponse {
 }
 
 message NotifyPropertyRequest {
-    string property_id = 1 [(validation.required) = true];
-    string message_name = 2 [(validation.required) = true];
-    Notifier notifier = 3 [(validation.required) = true];
+    string property_id = 1 [(validator.field) = {string_not_empty : true}];
+    string message_name = 2 [(validator.field) = {string_not_empty : true}];
+    Notifier notifier = 3 [(validator.field) = {msg_exists : true}];
 }
 
 message NotifyPropertyResponse {}

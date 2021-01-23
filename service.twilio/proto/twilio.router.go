@@ -5,9 +5,14 @@ import (
 	"context"
 
 	"github.com/edstell/lambda/libraries/rpc"
-	"github.com/edstell/lambda/libraries/validation"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 )
+
+type validator interface {
+	Validate() error
+}
 
 type Handler interface {
 	SendSMS(context.Context, *SendSMSRequest) (*SendSMSResponse, error)
@@ -32,8 +37,11 @@ func sendsms(handler func(context.Context, *SendSMSRequest) (*SendSMSResponse, e
 			return nil, err
 		}
 
-		if err := validation.Validate(body); err != nil {
-			return nil, err
+		var b interface{} = body
+		if v, ok := b.(validator); ok {
+			if err := v.Validate(); err != nil {
+				return nil, status.Error(codes.InvalidArgument, err.Error())
+			}
 		}
 
 		rsp, err := handler(ctx, body)
