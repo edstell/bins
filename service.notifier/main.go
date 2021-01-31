@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	svc "github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-xray-sdk-go/xray"
+	"github.com/edstell/lambda/libraries/errors"
 	"github.com/edstell/lambda/service.notifier/handler"
 	notifierproto "github.com/edstell/lambda/service.notifier/proto"
 	twilioproto "github.com/edstell/lambda/service.twilio/proto"
@@ -20,8 +21,8 @@ func main() {
 	lambdaService := svc.New(sess)
 	// Instrument the lambda client.
 	xray.AWS(lambdaService.Client)
-	twilio := twilioproto.NewClient(lambdaService, os.Getenv("TWILIO_ARN"))
+	twilio := twilioproto.NewClient(lambdaService, os.Getenv("TWILIO_ARN"), errors.Unmarshal)
 	handler := handler.New(twilio)
-	router := notifierproto.NewRouter(handler)
-	lambda.Start(router.Handler)
+	router := notifierproto.NewRouter(handler, errors.Marshal)
+	lambda.Start(router.Handle)
 }

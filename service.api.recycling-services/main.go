@@ -9,6 +9,7 @@ import (
 	svc "github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-xray-sdk-go/xray"
 	"github.com/edstell/lambda/libraries/api"
+	"github.com/edstell/lambda/libraries/errors"
 	"github.com/edstell/lambda/service.api.recycling-services/handler"
 	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
 )
@@ -20,7 +21,7 @@ func main() {
 	lambdaService := svc.New(sess)
 	// Instrument the lambda client.
 	xray.AWS(lambdaService.Client)
-	rsClient := recyclingservicesproto.NewClient(lambdaService, os.Getenv("RECYCLING_SERVICES_ARN"))
+	rsClient := recyclingservicesproto.NewClient(lambdaService, os.Getenv("RECYCLING_SERVICES_ARN"), errors.Unmarshal)
 	router := api.NewRouter()
 	router.Route("GET", "/properties/{property}", handler.GETProperty(rsClient))
 	lambda.Start(router.Handler)

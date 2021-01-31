@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	svc "github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-xray-sdk-go/xray"
+	"github.com/edstell/lambda/libraries/errors"
 	notifierproto "github.com/edstell/lambda/service.notifier/proto"
 	"github.com/edstell/lambda/service.recycling-services/handler"
 	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
@@ -31,8 +32,8 @@ func main() {
 	lambdaService := svc.New(sess)
 	// Instrument the lambda client.
 	xray.AWS(lambdaService.Client)
-	notifier := notifierproto.NewClient(lambdaService, os.Getenv("NOTIFIER_ARN"))
+	notifier := notifierproto.NewClient(lambdaService, os.Getenv("NOTIFIER_ARN"), errors.Unmarshal)
 	handler := handler.New(store, notifier, timeNowUTC)
-	router := recyclingservicesproto.NewRouter(handler)
-	lambda.Start(router.Handler)
+	router := recyclingservicesproto.NewRouter(handler, errors.Marshal)
+	lambda.Start(router.Handle)
 }

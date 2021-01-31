@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/edstell/lambda/libraries/errors"
 	"github.com/edstell/lambda/service.twilio/handler"
 	twilioproto "github.com/edstell/lambda/service.twilio/proto"
 	"github.com/edstell/lambda/service.twilio/twilio"
@@ -21,6 +22,6 @@ func main() {
 		twilio.WithFrom(os.Getenv("FROM_NUMBER")),
 	)
 	handler := handler.New(client)
-	router := twilioproto.NewRouter(handler)
-	lambda.Start(router.Handler)
+	router := twilioproto.NewRouter(handler, errors.Marshal)
+	lambda.Start(router.Handle)
 }
