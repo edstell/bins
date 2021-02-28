@@ -83,6 +83,9 @@ func OK(body interface{}) (*Response, error) {
 		rsp = string(bytes)
 	}
 	return &Response{
+		Headers: map[string]string{
+			"Access-Control-Allow-Origin": "*",
+		},
 		StatusCode: http.StatusOK,
 		Body:       rsp,
 	}, nil
