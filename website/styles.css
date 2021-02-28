@@ -1,0 +1,99 @@
+* {
+	font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+	font-weight: 300;
+	font-size: 15px;
+	color: #000;
+	line-height: 1.4;
+}
+
+h3 {
+	background: #547890;
+	padding: 12px 15px 10px 15px;
+	font-size: 20px;
+	line-height: 18px;
+	color: #fff;
+	margin: 0;
+}
+
+table {
+	width: 70%;
+	float: left;
+	margin: 0 0 0 30%;
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+
+thead {
+	display: table-header-group;
+	vertical-align: middle;
+	border-color: inherit;
+}
+
+tr {
+	display: table-row;
+	vertical-align: inherit;
+	border-color: inherit;
+}
+
+th {
+	padding: 8px;
+	text-align: left;
+	display: table-cell;
+	font-weight: bold;
+}
+
+tbody {
+	display: table-row-group;
+	vertical-align: middle;
+	border-color: inherit;
+}
+
+td {
+	padding: 8px;
+	vertical-align: top;
+	border-top: 1px solid #ddd;
+}
+
+.services-wrapper {
+	max-width: 850px;
+	margin: auto;
+}
+
+.service-wrapper {
+	border: 3px solid #d5d2c3
+}
+
+.service-content {
+	background: #f4f4f4;
+	position: relative;
+	min-height: 200px;
+}
+
+.image-wrapper {
+	width: 30%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	border-right: 1px solid #d5d2c3;
+	background-color: #fff;
+}
+
+.image {
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	position: absolute;
+	left: 20px;
+	right: 20px;
+	top: 20px;
+	bottom: 20px;
+	background-image: url(refuse.png);
+}
+
+.task-state {
+	padding: 8px;
+	background: #ccc;
+	font-size: 15px;
+	line-height: 19px;
+}
