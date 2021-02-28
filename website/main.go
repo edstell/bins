@@ -26,7 +26,7 @@ const templ = `
 		<h3 class="service-name">{{.Name}}</h3>
 		<div class="service-content">
 			<div class="image-wrapper">
-				<div class="image" style="background-image: url({{.Name|imageURL}});"></div>
+				<div class="image" style="background-image: url(images/{{.Name|imageURL}});"></div>
 			</div>
 			<table>
 				<thead>
