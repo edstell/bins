@@ -21,39 +21,61 @@ func main() {
 
 const templ = `
 <div class="services-wrapper">
+	{{range .Services}}
 	<div class="service-wrapper">
-		{{range .Services}}
-		<div class="service-name">
-			<h3>{{.Name}}</h3>
-			<div class="service-content">
-				<div class="image-wrapper"></div>
-				<table>
-					<thead>
-						<tr>
-							<th>Schedule</th>
-							<th>Last Service</th>
-							<th>Next Service</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>{{.Schedule}}</td>
-							<td>{{.LastService|formatDate}}</td>
-							<td>{{.NextService|formatDate}}</td>
-						</tr>
-						<tr>
-							<td colspan="3">
-								<p>{{.Status}}</p>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+		<h3 class="service-name">{{.Name}}</h3>
+		<div class="service-content">
+			<div class="image-wrapper">
+				<div class="image" style="background-image: url({{.Name|imageURL}});"></div>
 			</div>
+			<table>
+				<thead>
+					<tr>
+						<th>Schedule</th>
+						<th>Last Service</th>
+						<th>Next Service</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>{{.Schedule}}</td>
+						<td>{{.LastService|formatDate}}</td>
+						<td>{{.NextService|formatDate}}</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<div class="task-state">
+								<p>{{.Status}}</p>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
-		{{end}}
 	</div>
+	</br>
+	{{end}}
 </div>
 `
+
+func imageURL(name string) string {
+	switch name {
+	case "Non-recyclable refuse":
+		return "refuse.png"
+	case "Paper and cardboard":
+		return "paper.png"
+	case "Green Garden Waste (Subscription)":
+		return "garden.png"
+	case "Food waste":
+		return "food-waste.png"
+	case "Plastic, glass and tins":
+		return "recycling.png"
+	case "Batteries, small electrical items and textiles":
+		return "battery_bag.png"
+	default:
+		return ""
+	}
+}
 
 func formatDate(t *timestamppb.Timestamp) string {
 	if t.AsTime().IsZero() {
@@ -69,6 +91,7 @@ func displayProperty() error {
 	}
 	t := template.New("property").Funcs(map[string]interface{}{
 		"formatDate": formatDate,
+		"imageURL":   imageURL,
 	})
 	t, err = t.Parse(templ)
 	if err != nil {
