@@ -3,7 +3,7 @@ package domain
 import (
 	"time"
 
-	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
+	recyclingservicesproto "github.com/edstell/bins/service.recycling-services/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

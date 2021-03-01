@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	notifierproto "github.com/edstell/lambda/service.notifier/proto"
-	"github.com/edstell/lambda/service.recycling-services/domain"
-	"github.com/edstell/lambda/service.recycling-services/message"
-	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
-	"github.com/edstell/lambda/service.recycling-services/services"
-	"github.com/edstell/lambda/service.recycling-services/store"
+	notifierproto "github.com/edstell/bins/service.notifier/proto"
+	"github.com/edstell/bins/service.recycling-services/domain"
+	"github.com/edstell/bins/service.recycling-services/message"
+	recyclingservicesproto "github.com/edstell/bins/service.recycling-services/proto"
+	"github.com/edstell/bins/service.recycling-services/services"
+	"github.com/edstell/bins/service.recycling-services/store"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

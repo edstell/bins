@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/edstell/lambda/libraries/api"
+	"github.com/edstell/bins/libraries/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

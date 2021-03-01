@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
-	"github.com/edstell/lambda/service.recycling-services/domain"
+	"github.com/edstell/bins/service.recycling-services/domain"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

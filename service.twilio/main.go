@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/edstell/lambda/libraries/errors"
-	"github.com/edstell/lambda/service.twilio/handler"
-	twilioproto "github.com/edstell/lambda/service.twilio/proto"
-	"github.com/edstell/lambda/service.twilio/twilio"
+	"github.com/edstell/bins/libraries/errors"
+	"github.com/edstell/bins/service.twilio/handler"
+	twilioproto "github.com/edstell/bins/service.twilio/proto"
+	"github.com/edstell/bins/service.twilio/twilio"
 )
 
 func timeNowUTC() time.Time {

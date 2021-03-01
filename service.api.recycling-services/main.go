@@ -8,10 +8,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	svc "github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-xray-sdk-go/xray"
-	"github.com/edstell/lambda/libraries/api"
-	"github.com/edstell/lambda/libraries/errors"
-	"github.com/edstell/lambda/service.api.recycling-services/handler"
-	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
+	"github.com/edstell/bins/libraries/api"
+	"github.com/edstell/bins/libraries/errors"
+	"github.com/edstell/bins/service.api.recycling-services/handler"
+	recyclingservicesproto "github.com/edstell/bins/service.recycling-services/proto"
 )
 
 func main() {

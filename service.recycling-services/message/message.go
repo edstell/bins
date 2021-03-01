@@ -1,7 +1,7 @@
 package message
 
 import (
-	notifierproto "github.com/edstell/lambda/service.notifier/proto"
+	notifierproto "github.com/edstell/bins/service.notifier/proto"
 )
 
 // Message implementations describe a message which can be sent with

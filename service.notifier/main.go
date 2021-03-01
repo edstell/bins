@@ -8,10 +8,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	svc "github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-xray-sdk-go/xray"
-	"github.com/edstell/lambda/libraries/errors"
-	"github.com/edstell/lambda/service.notifier/handler"
-	notifierproto "github.com/edstell/lambda/service.notifier/proto"
-	twilioproto "github.com/edstell/lambda/service.twilio/proto"
+	"github.com/edstell/bins/libraries/errors"
+	"github.com/edstell/bins/service.notifier/handler"
+	notifierproto "github.com/edstell/bins/service.notifier/proto"
+	twilioproto "github.com/edstell/bins/service.twilio/proto"
 )
 
 func main() {

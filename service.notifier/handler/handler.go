@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/edstell/lambda/service.notifier/notifier"
-	notifierproto "github.com/edstell/lambda/service.notifier/proto"
-	twilioproto "github.com/edstell/lambda/service.twilio/proto"
+	"github.com/edstell/bins/service.notifier/notifier"
+	notifierproto "github.com/edstell/bins/service.notifier/proto"
+	twilioproto "github.com/edstell/bins/service.twilio/proto"
 )
 
 func timeNowUTC() time.Time {

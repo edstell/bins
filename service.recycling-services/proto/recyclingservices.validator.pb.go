@@ -8,7 +8,7 @@ import (
 	math "math"
 	proto "github.com/golang/protobuf/proto"
 	_ "github.com/mwitkow/go-proto-validators"
-	_ "github.com/edstell/lambda/service.notifier/proto"
+	_ "github.com/edstell/bins/service.notifier/proto"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )

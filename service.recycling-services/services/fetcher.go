@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/edstell/lambda/service.recycling-services/domain"
+	"github.com/edstell/bins/service.recycling-services/domain"
 )
 
 // Fetcher implementations should retrieve the latest services available for

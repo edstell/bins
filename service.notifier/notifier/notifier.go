@@ -3,8 +3,8 @@ package notifier
 import (
 	"context"
 
-	notifierproto "github.com/edstell/lambda/service.notifier/proto"
-	twilioproto "github.com/edstell/lambda/service.twilio/proto"
+	notifierproto "github.com/edstell/bins/service.notifier/proto"
+	twilioproto "github.com/edstell/bins/service.twilio/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

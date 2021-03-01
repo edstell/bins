@@ -7,7 +7,7 @@
 package recyclingservicesproto
 
 import (
-	proto "github.com/edstell/lambda/service.notifier/proto"
+	proto "github.com/edstell/bins/service.notifier/proto"
 	_ "github.com/mwitkow/go-proto-validators"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"

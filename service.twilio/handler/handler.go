@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 
-	twilioproto "github.com/edstell/lambda/service.twilio/proto"
-	"github.com/edstell/lambda/service.twilio/twilio"
+	twilioproto "github.com/edstell/bins/service.twilio/proto"
+	"github.com/edstell/bins/service.twilio/twilio"
 )
 
 type handler struct {

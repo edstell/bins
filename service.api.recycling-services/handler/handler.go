@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 
-	"github.com/edstell/lambda/libraries/api"
-	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
+	"github.com/edstell/bins/libraries/api"
+	recyclingservicesproto "github.com/edstell/bins/service.recycling-services/proto"
 )
 
 func GETProperty(recyclingServices recyclingservicesproto.Client) api.Handler {

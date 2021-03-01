@@ -3,7 +3,7 @@ package notifier
 import (
 	"context"
 
-	twilioproto "github.com/edstell/lambda/service.twilio/proto"
+	twilioproto "github.com/edstell/bins/service.twilio/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

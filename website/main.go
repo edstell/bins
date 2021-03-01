@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
+	recyclingservicesproto "github.com/edstell/bins/service.recycling-services/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"honnef.co/go/js/dom"
 )

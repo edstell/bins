@@ -3,7 +3,7 @@ package message
 import (
 	"time"
 
-	"github.com/edstell/lambda/service.recycling-services/domain"
+	"github.com/edstell/bins/service.recycling-services/domain"
 )
 
 type Services []domain.Service

@@ -1,7 +1,7 @@
 package notifier
 
 import (
-	notifierproto "github.com/edstell/lambda/service.notifier/proto"
+	notifierproto "github.com/edstell/bins/service.notifier/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

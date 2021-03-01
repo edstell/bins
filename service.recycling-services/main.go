@@ -10,11 +10,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	svc "github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-xray-sdk-go/xray"
-	"github.com/edstell/lambda/libraries/errors"
-	notifierproto "github.com/edstell/lambda/service.notifier/proto"
-	"github.com/edstell/lambda/service.recycling-services/handler"
-	recyclingservicesproto "github.com/edstell/lambda/service.recycling-services/proto"
-	"github.com/edstell/lambda/service.recycling-services/store"
+	"github.com/edstell/bins/libraries/errors"
+	notifierproto "github.com/edstell/bins/service.notifier/proto"
+	"github.com/edstell/bins/service.recycling-services/handler"
+	recyclingservicesproto "github.com/edstell/bins/service.recycling-services/proto"
+	"github.com/edstell/bins/service.recycling-services/store"
 )
 
 func timeNowUTC() time.Time {
