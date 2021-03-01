@@ -1,4 +1,4 @@
-module github.com/edstell/lambda
+module github.com/edstell/bins
 
 go 1.16
 
