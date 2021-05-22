@@ -51,6 +51,7 @@ var V2Parser = ParserFunc(func(html []byte) ([]domain.Service, error) {
 				}
 				services[i].NextService = t
 			case "Last collection":
+				services[i].Status = value
 				value = dropOrdinals(value)
 				t, _ := time.ParseInLocation("Monday, 2 January, at 3:04pm", value, tz)
 				t = t.AddDate(now.Year(), 0, 0)
