@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"time"
@@ -28,8 +29,13 @@ func New(store store.Store, notifier notifierproto.Client, timeNow func() time.T
 	return &handler{
 		store: store,
 		fetcher: services.WebScraper(
-			&http.Client{Timeout: time.Second * 30},
-			services.V1Parser,
+			&http.Client{
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+				},
+				Timeout: time.Second * 30,
+			},
+			services.V2Parser,
 			"https://recyclingservices.bromley.gov.uk/waste/3665297",
 		),
 		notifier:        notifier,
