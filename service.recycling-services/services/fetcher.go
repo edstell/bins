@@ -29,18 +29,15 @@ func WebScraper(client *http.Client, parser Parser, baseURL string) Fetcher {
 			return nil, err
 		}
 		req = req.WithContext(ctx)
-
 		rsp, err := client.Do(req)
 		if err != nil {
 			return nil, err
 		}
 		defer rsp.Body.Close()
-
 		bytes, err := ioutil.ReadAll(rsp.Body)
 		if err != nil {
 			return nil, err
 		}
-
 		return parser.Parse(bytes)
 	})
 }

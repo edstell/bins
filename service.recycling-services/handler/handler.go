@@ -29,7 +29,7 @@ func New(store store.Store, notifier notifierproto.Client, timeNow func() time.T
 		store: store,
 		fetcher: services.WebScraper(
 			&http.Client{Timeout: time.Second * 30},
-			services.ParseHTML,
+			services.V1Parser,
 			"https://recyclingservices.bromley.gov.uk/property",
 		),
 		notifier:        notifier,

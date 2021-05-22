@@ -17,6 +17,9 @@ import (
 	"github.com/edstell/bins/service.recycling-services/store"
 )
 
+//go:generate go-bindata -o ./services/assets/assets.go -pkg assets -ignore=\.go$ -ignore=.DS_Store ./services/assets
+//go:generate go fmt ./services/assets/assets.go
+
 func timeNowUTC() time.Time {
 	return time.Now().UTC()
 }
