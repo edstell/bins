@@ -69,3 +69,46 @@ func TestWebScraper(t *testing.T) {
 		assert.Equal(t, service, result[i], service.Name)
 	}
 }
+
+func TestV2Parser(t *testing.T) {
+	t.Parallel()
+	html, err := assets.Asset("services/assets/v2.html")
+	require.NoError(t, err)
+	loc, _ := time.LoadLocation("Europe/London")
+	result, err := V2Parser.Parse(html)
+	assert.Equal(t, []domain.Service{
+		{
+			Name:        "Non-Recyclable Refuse",
+			Schedule:    "Thursday every other week",
+			LastService: time.Date(2021, 5, 20, 7, 15, 00, 00, loc),
+			NextService: time.Date(2021, 6, 4, 0, 0, 0, 0, loc),
+		},
+		{
+			Name:        "Paper & Cardboard",
+			Schedule:    "Thursday every other week",
+			LastService: time.Date(2021, 5, 20, 9, 03, 00, 00, loc),
+			NextService: time.Date(2021, 6, 4, 0, 0, 0, 0, loc),
+		},
+		{
+			Name:        "Garden Waste",
+			Schedule:    "Wednesday every other week",
+			LastService: time.Date(2021, 5, 12, 9, 16, 00, 00, loc),
+			NextService: time.Date(2021, 5, 26, 0, 0, 0, 0, loc),
+		},
+		{
+			Name:        "Food Waste",
+			Schedule:    "Thursday every week",
+			LastService: time.Date(2021, 5, 20, 9, 36, 00, 00, loc),
+			NextService: time.Date(2021, 5, 27, 0, 0, 0, 0, loc),
+		},
+		{
+			Name:        "Mixed Recycling (Cans, Plastics & Glass)",
+			Schedule:    "Thursday every other week",
+			LastService: time.Date(2021, 5, 13, 8, 56, 00, 00, loc),
+			NextService: time.Date(2021, 5, 27, 0, 0, 0, 0, loc),
+		},
+		{
+			Name: "Batteries, small electrical items and textiles",
+		},
+	}, result)
+}
