@@ -11,20 +11,20 @@ import (
 // Fetcher implementations should retrieve the latest services available for
 // the propertyID provided.
 type Fetcher interface {
-	Fetch(context.Context, string) ([]domain.Service, error)
+	Fetch(context.Context) ([]domain.Service, error)
 }
 
-type FetcherFunc func(context.Context, string) ([]domain.Service, error)
+type FetcherFunc func(context.Context) ([]domain.Service, error)
 
-func (f FetcherFunc) Fetch(ctx context.Context, propertyID string) ([]domain.Service, error) {
-	return f(ctx, propertyID)
+func (f FetcherFunc) Fetch(ctx context.Context) ([]domain.Service, error) {
+	return f(ctx)
 }
 
 // WebScraper returns a Fetcher implementation which will fetch the latest
 // service information by scraping the recycling services website.
-func WebScraper(client *http.Client, parser Parser, baseURL string) Fetcher {
-	return FetcherFunc(func(ctx context.Context, propertyID string) ([]domain.Service, error) {
-		req, err := http.NewRequest("GET", baseURL+"/"+propertyID, nil)
+func WebScraper(client *http.Client, parser Parser, url string) Fetcher {
+	return FetcherFunc(func(ctx context.Context) ([]domain.Service, error) {
+		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			return nil, err
 		}

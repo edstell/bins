@@ -30,7 +30,7 @@ func New(store store.Store, notifier notifierproto.Client, timeNow func() time.T
 		fetcher: services.WebScraper(
 			&http.Client{Timeout: time.Second * 30},
 			services.V1Parser,
-			"https://recyclingservices.bromley.gov.uk/property",
+			"https://recyclingservices.bromley.gov.uk/waste/3665297",
 		),
 		notifier:        notifier,
 		timeNow:         timeNow,
@@ -52,7 +52,7 @@ func (h *handler) ReadProperty(ctx context.Context, body *recyclingservicesproto
 // first fetching the latest property data (with the fetcher), then updating the
 // store with the new content.
 func (h *handler) SyncProperty(ctx context.Context, body *recyclingservicesproto.SyncPropertyRequest) (*recyclingservicesproto.SyncPropertyResponse, error) {
-	services, err := h.fetcher.Fetch(ctx, body.PropertyId)
+	services, err := h.fetcher.Fetch(ctx)
 	if err != nil {
 		return nil, err
 	}

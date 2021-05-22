@@ -23,7 +23,7 @@ func TestWebScraper(t *testing.T) {
 	}))
 	defer server.Close()
 	scraper := WebScraper(server.Client(), V1Parser, server.URL)
-	result, err := scraper.Fetch(context.Background(), "property_id")
+	result, err := scraper.Fetch(context.Background())
 	require.NoError(t, err)
 	fmt.Println(result)
 	for i, service := range []domain.Service{
